@@ -1,6 +1,6 @@
 "use client"
 
-import React, { use, useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -14,7 +14,6 @@ import { LockKeyhole } from 'lucide-react'
 import { ALargeSmall } from 'lucide-react'
 import { AxiosError } from 'axios'
 import { api } from '@/lib/utils'
-import { set } from 'zod/v4-mini'
 
 const formSchema = z.object({
   full_name: z.string().max(100),
@@ -47,7 +46,7 @@ const SignUpForm = () => {
 
   async function onSubmit(data: FormValues) {
     try {
-      // await api.post("/auth/register", data)
+      await api.post("/auth/register", data)
       setUserCache({
         full_name: data.full_name,
         email: data.email,
@@ -126,7 +125,7 @@ const SignUpForm = () => {
         </Form>
         <p className='mt-6 text-center'>
           Do you have an account? 
-          <Link href='/login' className='ms-2 font-semibold hover:underline'>Login</Link>
+          <Link href='/sign-in' className='ms-2 font-semibold hover:underline'>Login</Link>
         </p>
       </div>
       }
