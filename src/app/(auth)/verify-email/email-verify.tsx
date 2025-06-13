@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { api } from '@/lib/utils'
+import { api } from '@/lib/services'
 
 const EmailVerify = () => {
   const router = useRouter()
@@ -18,7 +18,7 @@ const EmailVerify = () => {
 
     const verifyEmail = async () => {
       try {
-        await api.post('/verify-email', { token })
+        await api.post(`/v1/auth/verify-email/${ token }`)
         setStatus('success')
         setTimeout(() => {
           router.push('/sign-in')

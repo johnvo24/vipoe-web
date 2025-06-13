@@ -13,7 +13,7 @@ import { Mail } from 'lucide-react'
 import { LockKeyhole } from 'lucide-react'
 import { ALargeSmall } from 'lucide-react'
 import { AxiosError } from 'axios'
-import { api } from '@/lib/utils'
+import { api } from '@/lib/services'
 
 const formSchema = z.object({
   full_name: z.string().max(100),
@@ -46,7 +46,7 @@ const SignUpForm = () => {
 
   async function onSubmit(data: FormValues) {
     try {
-      await api.post("/auth/register", data)
+      await api.post(`/v1/auth/register`, data)
       setUserCache({
         full_name: data.full_name,
         email: data.email,
