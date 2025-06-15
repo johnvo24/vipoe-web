@@ -1,20 +1,48 @@
 "use client"
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import AccountInformation from '@/app/profile/info'
+import useAuth from '@/lib/hooks/useAuth'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { api } from '@/lib/services'
 
-const user = {
-  full_name: "John Doe",
-  username: "johndoe",
-  email: "johndoe@gmail.com",
-  phone: "123-456-7890",
-  location: "New York, USA",
-  bio: "This is a sample bio.",
-  date_of_birth: "1990-01-01",
+interface User {
+  full_name: string
+  username: string
+  email: string
+  avt_url: string
+  bio: string
+  phone: string
+  location: string
+  date_of_birth: string
 }
 
 const TabsProfile = () => {
+  const { user, loading } = useAuth()
+  const [userData, setUserData] = useState<User|null>(null)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token")
+        const response = await api.get("/user/me", {
+          headers: { Authorization: `Bearer ${token}`},
+        })
+        setUserData(response.data)
+      } catch (error) {
+        console.error("Failed to fetch profile:", error)
+      }
+    }
+  
+    if (user) {
+      fetchProfile()
+    }
+  }, [user])
+
+  if (loading) {
+    return <div>Chờ xíu...</div>
+  }
+
   return (
     <Tabs defaultValue="account" className="w-full">
       <TabsList>
@@ -25,16 +53,17 @@ const TabsProfile = () => {
       </TabsList>
       <TabsContent value="account">
         <AccountInformation
-          full_name={user.full_name}
-          username={user.username}
-          email={user.email}
-          phone={user.phone}
-          location={user.location}
-          bio={user.bio}
-          date_of_birth={user.date_of_birth}
+          full_name={userData?.full_name}
+          username={userData?.username}
+          email={userData?.email}
+          avt_url={userData?.avt_url}
+          bio={userData?.bio}
+          phone={userData?.phone}
+          location={userData?.location}
+          date_of_birth={userData?.date_of_birth}
         />
       </TabsContent>
-      <TabsContent value="poem">Change your password here.</TabsContent>
+      <TabsContent value="poem">ad</TabsContent>
       <TabsContent value="wishlist"><p>Make changes to your account here.</p></TabsContent>
       <TabsContent value="account_settings">Change your password here.</TabsContent>
     </Tabs>

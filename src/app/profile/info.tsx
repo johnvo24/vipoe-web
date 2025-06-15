@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Image from 'next/image'
 import {
   Dialog,
@@ -25,6 +25,9 @@ const AccountInformation = (props: any) => {
     phone: props.phone || '',
     location: props.location || '',
   })
+  const [avatar, setAvatar] = useState<File | null>(null)
+  const [preview, setPreview] = useState<string>(props.avt_url || "/images/st-mtp.jpg")
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = async () => {
     try {
@@ -36,22 +39,77 @@ const AccountInformation = (props: any) => {
         alert("Edited Successful")
       }
     } catch (error) {
-      alert("Edited Failed")
+      console.error("Failed to update profile:", error)
     }
   }
-  console.log(data)
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setAvatar(file)
+      setPreview(URL.createObjectURL(file))
+    }
+  }
+
+  const handleAvatarUpload = async () => {
+    if (avatar) {
+      const formData = new FormData()
+      formData.append('avatar', avatar)
+      try {
+        const token = localStorage.getItem("token")
+        if (token) {
+          const response = await api.put("/v1/profile/avatar", formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          if (response.status === 200) {
+            alert("Avatar updated successfully")
+            setPreview(URL.createObjectURL(avatar))
+          } else {
+            alert("Failed to update avatar")
+          }
+        }
+      } catch (error) {
+        console.error("Error uploading avatar:", error)
+      }
+    } else {
+      console.log("No avatar selected")
+    }
+  }
+
   return (
     <div className="flex flex-col items-center bg-white rounded-md overflow-hidden">
       <div className="w-full h-36 bg-cover" style={{ backgroundImage: "url('/images/bg-stmpt.jpg')" }}></div>
-      <div className="-mt-16 w-32 h-32 rounded-full border-4 border-white overflow-hidden">
+      <div className="-mt-16 w-32 h-32 rounded-full border-4 border-white overflow-hidden relative group">
         <Image 
-          src='/images/st-mtp.jpg'
+          src={preview}
           width={150}
           height={150}
           alt="Avatar"
           className="object-cover w-full h-full"
         />
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+          title="Change Avatar"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <span className="text-white font-semibold">Upload Avatar</span>
+        </button>
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleAvatarChange}
+        />
       </div>
+
+      {avatar && (
+        <Button type='submit' onClick={handleAvatarUpload} size={'sm'} className='cursor-pointer mt-2'>Update Avatar</Button>
+      )}
 
       <div className="mt-2 text-center">
         <h1 className="text-xl font-bold">{props.full_name}</h1>
