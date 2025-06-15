@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { api } from "@/lib/services"
 import { jwtDecode } from "jwt-decode"
+import { API_ROUTES } from "../routes"
 
 interface User {
   full_name: string
@@ -23,7 +24,7 @@ const useAuth = () => {
     if (token) {
       try {
         const decode: any = jwtDecode(token)
-        api.get("/user/me", {
+        api.get(API_ROUTES.GET_PROFILE, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => setUser(response.data))

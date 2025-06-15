@@ -14,6 +14,7 @@ import { LockKeyhole } from 'lucide-react'
 import { ALargeSmall } from 'lucide-react'
 import { AxiosError } from 'axios'
 import { api } from '@/lib/services'
+import { API_ROUTES } from '@/lib/routes'
 
 const formSchema = z.object({
   full_name: z.string().max(100),
@@ -46,7 +47,7 @@ const SignUpForm = () => {
 
   async function onSubmit(data: FormValues) {
     try {
-      await api.post(`/v1/auth/register`, data)
+      await api.post(API_ROUTES.SIGN_UP, data)
       setUserCache({
         full_name: data.full_name,
         email: data.email,

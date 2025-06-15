@@ -11,6 +11,7 @@ import { UserCircle2, LockKeyhole } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { api } from '@/lib/services'
+import { API_ROUTES } from '@/lib/routes'
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -45,7 +46,7 @@ const SignInForm = () => {
       formData.append("username", values.username)
       formData.append("password", values.password)
 
-      const response = await api.post("/auth/login", formData, {
+      const response = await api.post(API_ROUTES.SIGN_IN, formData, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" }
       })
       localStorage.setItem("token", response.data.access_token)

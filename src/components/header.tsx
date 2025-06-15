@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token")
-    router.push("/login")
+    router.push("/sign-in")
   }
   
   useEffect(() => {

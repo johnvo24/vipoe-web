@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { api } from '@/lib/services'
+import { API_ROUTES } from '@/lib/routes'
 
 const AccountInformation = (props: any) => {
   const [data, setData] = useState({
@@ -29,7 +30,7 @@ const AccountInformation = (props: any) => {
     try {
       const token = localStorage.getItem("token")
       if (token) {
-        const response = api.put("/user/profile", data, {
+        const response = api.put(API_ROUTES.UPDATE_PROFILE, data, {
           headers: { Authorization: `Bearer ${token}` },
         })
         alert("Edited Successful")
