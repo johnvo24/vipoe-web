@@ -13,6 +13,7 @@ interface User {
   location: string
   bio: string
   date_of_birth: string
+  avt_url: string
 }
 
 const useAuth = () => {

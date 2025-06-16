@@ -31,7 +31,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
             className={"w-12 h-12 cursor-pointer mr-4"}
             src={"https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg"}
             alt={poemData.user_name}
-            fallbackText={poemData.user_name.charAt(0)}
+            fallbackText={poemData.user_name}
           />
           <div className="info-text">
             <p className="username text-lg font-bold -mb-1">{poemData.user_name}</p>
