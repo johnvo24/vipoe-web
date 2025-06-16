@@ -25,7 +25,7 @@ const TabsProfile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token")
-        const response = await api.get("/user/me", {
+        const response = await api.get("/v1/user/profile", {
           headers: { Authorization: `Bearer ${token}`},
         })
         setUserData(response.data)
