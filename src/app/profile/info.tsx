@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import {
   Dialog,
@@ -15,42 +15,116 @@ import { Button } from '@/components/ui/button'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { api } from '@/lib/services'
+import { API_ROUTES } from '@/lib/routes'
 
 const AccountInformation = (props: any) => {
   const [data, setData] = useState({
     full_name: props.full_name || '',
     bio: props.bio || '',
-    dob: props.date_of_birth || '',
+    date_of_birth: props.date_of_birth || '2023-01-01',
     phone: props.phone || '',
     location: props.location || '',
+    avt_url: props.avt_url || '',
   })
+  const [avatar, setAvatar] = useState<File | null>(null)
+  const [preview, setPreview] = useState<string>(props.avt_url || "/images/st-mtp.jpg")
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (props.avt_url) {
+      setPreview(props.avt_url)
+    }
+  }, [props.avt_url])
 
   const handleSubmit = async () => {
     try {
       const token = localStorage.getItem("token")
       if (token) {
-        const response = api.put("/user/profile", data, {
+        await api.put(API_ROUTES.UPDATE_PROFILE, data, {
           headers: { Authorization: `Bearer ${token}` },
         })
         alert("Edited Successful")
       }
     } catch (error) {
-      alert("Edited Failed")
+      console.error("Failed to update profile:", error)
     }
   }
-  console.log(data)
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setAvatar(file)
+      setPreview(URL.createObjectURL(file))
+    }
+  }
+
+  const handleAvatarUpload = async () => {
+    if (avatar) {
+      const formData = new FormData()
+      formData.append('avatar', avatar)
+      try {
+        const token = localStorage.getItem("token")
+        if (token) {
+          const response = await api.put(API_ROUTES.UPDATE_AVATAR, formData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          if (response.status === 200) {
+            alert("Avatar updated successfully")
+            setAvatar(null)
+          } else {
+            alert("Failed to update avatar")
+          }
+        }
+      } catch (error) {
+        console.error("Error uploading avatar:", error)
+      }
+    } else {
+      console.log("No avatar selected")
+    }
+  }
+
+  const formatDate = (dateInput: string | Date): string => {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0'),
+    ].join('-')
+  }
+  
   return (
     <div className="flex flex-col items-center bg-white rounded-md overflow-hidden">
       <div className="w-full h-36 bg-cover" style={{ backgroundImage: "url('/images/bg-stmpt.jpg')" }}></div>
-      <div className="-mt-16 w-32 h-32 rounded-full border-4 border-white overflow-hidden">
+      <div className="-mt-16 w-32 h-32 rounded-full border-4 border-white overflow-hidden relative group">
         <Image 
-          src='/images/st-mtp.jpg'
+          src={preview}
           width={150}
           height={150}
           alt="Avatar"
           className="object-cover w-full h-full"
         />
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+          title="Change Avatar"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <span className="text-white font-semibold">Upload Avatar</span>
+        </button>
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleAvatarChange}
+        />
       </div>
+
+      {avatar && (
+        <Button type='button' onClick={handleAvatarUpload} size={'sm'} className='cursor-pointer mt-2'>Update Avatar</Button>
+      )}
 
       <div className="mt-2 text-center">
         <h1 className="text-xl font-bold">{props.full_name}</h1>
@@ -63,7 +137,7 @@ const AccountInformation = (props: any) => {
           <label className="w-1/3 font-semibold">Fullname:</label>
           <input
             type="text"
-            value={ props.full_name == null ? "None" : props.full_name }
+            value={ props.full_name == null ? "2023-01-01" : props.full_name }
             readOnly
             className="flex-1 bg-gray-100 p-2 rounded-md border border-gray-300 pointer-events-none select-none text-muted-foreground"
           />
@@ -81,7 +155,7 @@ const AccountInformation = (props: any) => {
           <label className="w-1/3 font-semibold">Date of birth:</label>
           <input
             type="date"
-            value={ props.date_of_birth == null ? "dd/mm/yyyy" : props.date_of_birth }
+            value={ props.date_of_birth == null ? "None" : formatDate(props.date_of_birth) }
             readOnly
             className="flex-1 bg-gray-100 p-2 rounded-md border border-gray-300 pointer-events-none select-none text-muted-foreground"
           />
@@ -145,12 +219,12 @@ const AccountInformation = (props: any) => {
                 Dob
               </Label>
               <Input 
-                id="dob" 
-                name="dob" 
-                value={data.dob} 
+                id="date_of_birth" 
+                name="date_of_birth" 
+                value={data.date_of_birth} 
                 type="date" 
                 className="flex-1"
-                onChange={(e) => setData({ ...data, dob: e.target.value })}
+                onChange={(e) => setData({ ...data, date_of_birth: e.target.value })}
               />
             </div>
             <div className="flex w-5/6 items-center">

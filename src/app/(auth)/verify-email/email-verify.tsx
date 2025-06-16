@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { api } from '@/lib/services'
+import { API_ROUTES } from '@/lib/routes'
 
 const EmailVerify = () => {
   const router = useRouter()
@@ -18,7 +19,7 @@ const EmailVerify = () => {
 
     const verifyEmail = async () => {
       try {
-        await api.post(`/v1/auth/verify-email/${ token }`)
+        await api.post(`${API_ROUTES.VERIFY_EMAIL}/${ token }`)
         setStatus('success')
         setTimeout(() => {
           router.push('/sign-in')
