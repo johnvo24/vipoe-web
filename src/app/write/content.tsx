@@ -157,7 +157,7 @@ const Content = () => {
           <p className='w-full text-start text-lg mb-1 text-gray-700'>Preview:</p>
           <hr className="mt-1 mb-4 w-full border-dashed border-gray-500" />
           <div className="preview bg-gradient-to-tr from-gray-700 via-gray-400 to-gray-300 p-12">
-            <PostCard className={''} poemData={poem} />
+            <PostCard className={''} poemData={poemData} />
           </div>
         </div>
       </div>
