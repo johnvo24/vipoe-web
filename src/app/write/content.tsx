@@ -75,22 +75,6 @@ const Content = () => {
     }
   }
 
-  const createPoem = async () => {
-    try {
-      const token = localStorage.getItem("token")
-      if (token) {
-        await api.post("https://vipoe-backend.onrender.com/api/v1/poem", poemData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        alert("Create poem successfully")
-      } else {
-        alert("No token found in localStorage")
-      }
-    } catch (error) {
-      console.error("Error creating poem:", error)
-    }
-  }
-
   if (loading) {
     return (
       <Skeleton className='w-8/12 h-96 mx-auto mt-16' />
@@ -110,12 +94,12 @@ const Content = () => {
 
   return (
     <div className="main pt-12 w-full">
-      <div className='content mx-auto flex flex-col items-center w-8/12 min-w-[960px] my-4 pt-4 rounded-lg'>
+      <div className='content bg-white mx-auto flex flex-col items-center w-8/12 min-w-[960px] my-4 py-4 rounded-lg'>
         <div className='w-3/4 flex flex-col items-center'>
           <div className='flex w-full justify-between items-center'>
             <div className='w-4/6 mr-2'>
               <p className='w-full text-start text-lg mb-1 text-gray-700'>Prompt:</p>
-              <Input className='bg-white hover:bg-gray-100' placeholder='Enter promt' onChange={(e) => setPrompt(e.target.value)} />
+              <Input className='bg-white' placeholder='Enter promt' size={1} onChange={(e) => setPrompt(e.target.value)} />
             </div>
             <div className='w-2/6'>
               <p className='w-full text-start text-lg mb-1 text-gray-700'>Model:</p>
@@ -173,7 +157,7 @@ const Content = () => {
           <p className='w-full text-start text-lg mb-1 text-gray-700'>Preview:</p>
           <hr className="mt-1 mb-4 w-full border-dashed border-gray-500" />
           <div className="preview bg-gradient-to-tr from-gray-700 via-gray-400 to-gray-300 p-12">
-            <PostCard className={''} poemData={poemData} />
+            <PostCard className={''} poemData={poem} />
           </div>
         </div>
       </div>

@@ -1,12 +1,13 @@
 'use client'
 
 import UserAvatar from "./avatar"
-import { Focus, Bookmark, Heart, Forward } from 'lucide-react'
-import { useRouter } from "next/navigation"
+import { Focus, Bookmark, Heart, Forward, Download } from 'lucide-react'
+import { useRouter, usePathname } from "next/navigation"
 import { api } from "@/lib/services"
 
 const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
   const router = useRouter()
+  const pathname = usePathname()
 
   const handleSaveToCol = async () => {
     try {
@@ -16,6 +17,36 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
       })
       if (response != null) {
         alert("Poem added to collection successfully")
+      }
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  const handleCreatePoem = async () => {
+    const formData = {
+      genre_id: 1,
+      prompt: poemData.prompt,
+      title: poemData.title,
+      content: poemData.content,
+      note: poemData.note || "",
+      tags: "#lục bát #tình yêu #thơ",
+      is_public: false,
+      image: "https://res.cloudinary.com/dm3e2ygq9/image/upload/v1750086996/vipoe/poem_images/odm6mb2jqc45zixyvihp.jpg",
+    }
+    try {
+      const token = localStorage.getItem("token")
+      if (token) {
+        const response = await api.post("https://vipoe-backend.onrender.com/api/v1/poem", JSON.stringify(formData), {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        if (response != null) {
+          alert("Poem created successfully")
+          router.push('/')
+        }
       }
     } catch (error) {
       alert(error)
@@ -57,25 +88,36 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
         <p className="text-base whitespace-pre-wrap">{`${poemData.content}`}</p>
       </div>
       <div className="interaction-box flex mt-2 rounded-lg border">
-        {/* Nút Like */}
-        <button className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-          <Heart className="text-gray-600" size={20} />
-          {/* <FaHeart className="text-red-500" size={20} /> */}
-          <span className="w-16 text-start text-gray-700 font-medium">120</span>
-        </button>
+        {
+          pathname === '/write' ? (
+            <button onClick={handleCreatePoem} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
+              <Download className="text-gray-600" size={20} />
+              <span className="w-16 text-start text-gray-700 font-medium">Save</span>
+            </button>
+          ) : (
+            <>
+              {/* Nút Like */}
+              <button className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
+                <Heart className="text-gray-600" size={20} />
+                {/* <FaHeart className="text-red-500" size={20} /> */}
+                <span className="w-16 text-start text-gray-700 font-medium">120</span>
+              </button>
 
-        {/* Nút Save */}
-        <button onClick={handleSaveToCol} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-          <Bookmark className="text-gray-600" size={20} />
-          {/* <FaBookmark className="text-yellow-500" size={20} /> */}
-          <span className="w-16 text-start text-gray-700 font-medium">45</span>
-        </button>
+              {/* Nút Save */}
+              <button onClick={handleSaveToCol} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
+                <Bookmark className="text-gray-600" size={20} />
+                {/* <FaBookmark className="text-yellow-500" size={20} /> */}
+                <span className="w-16 text-start text-gray-700 font-medium">45</span>
+              </button>
 
-        {/* Nút Share */}
-        <button className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-          <Forward className="text-gray-600" size={21} />
-          <span className="text-start text-gray-700 font-medium">Share</span>
-        </button>
+              {/* Nút Share */}
+              <button className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
+                <Forward className="text-gray-600" size={21} />
+                <span className="text-start text-gray-700 font-medium">Share</span>
+              </button>
+            </>
+          )
+        }
       </div>
     </div>
   )
