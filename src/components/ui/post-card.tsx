@@ -4,6 +4,7 @@ import UserAvatar from "./avatar"
 import { Focus, Bookmark, Heart, Forward, Download } from 'lucide-react'
 import { useRouter, usePathname } from "next/navigation"
 import { api } from "@/lib/services"
+import { API_ROUTES } from "@/lib/routes"
 
 const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
   const router = useRouter()
@@ -22,34 +23,43 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
       alert(error)
     }
   }
-
+  console.log(poemData.poem_id)
   const handleCreatePoem = async () => {
-    const formData = {
-      genre_id: 1,
-      prompt: poemData.prompt,
-      title: poemData.title,
-      content: poemData.content,
-      note: poemData.note || "",
-      tags: "#lục bát #tình yêu #thơ",
-      is_public: false,
-      image: "https://res.cloudinary.com/dm3e2ygq9/image/upload/v1750086996/vipoe/poem_images/odm6mb2jqc45zixyvihp.jpg",
+    const formData = new FormData()
+    formData.append("genre_id", "1")
+    formData.append("prompt", poemData.prompt)
+    formData.append("title", poemData.title)
+    formData.append("content", poemData.content)
+    formData.append("note", poemData.note || "")
+    formData.append("tags", poemData.tags || "")
+    formData.append("is_public", "false")
+    if (poemData.image instanceof File) {
+      formData.append("image", poemData.image)
     }
     try {
       const token = localStorage.getItem("token")
-      if (token) {
-        const response = await api.post("https://vipoe-backend.onrender.com/api/v1/poem", JSON.stringify(formData), {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        })
-        if (response != null) {
-          alert("Poem created successfully")
-          router.push('/')
-        }
+      if (!token) {
+        alert("You must be logged in to create a poem.")
+        return
       }
-    } catch (error) {
-      alert(error)
+      const response = await api.post(API_ROUTES.CRUD_POEM, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      if (response && (response.status === 201 || response.status === 200)) {
+        alert("Poem created successfully")
+        router.push('/')
+      } else {
+        alert("Tạo poem thất bại!")
+      }
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        alert(error.response.data.message)
+      } else {
+        alert("Đã có lỗi xảy ra khi tạo poem.")
+      }
     }
   }
 
@@ -92,7 +102,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
           pathname === '/write' ? (
             <button onClick={handleCreatePoem} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
               <Download className="text-gray-600" size={20} />
-              <span className="w-16 text-start text-gray-700 font-medium">Save</span>
+              <span className="text-start text-gray-700 font-medium">Save</span>
             </button>
           ) : (
             <>
