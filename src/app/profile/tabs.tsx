@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import AccountInformation from '@/app/profile/info'
 import useAuth from '@/lib/hooks/useAuth'
+import MyPoem from './my-poem'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from '@/lib/services'
 
@@ -63,7 +64,7 @@ const TabsProfile = () => {
           date_of_birth={userData?.date_of_birth}
         />
       </TabsContent>
-      <TabsContent value="poem">ad</TabsContent>
+      <TabsContent value="poem"><MyPoem /></TabsContent>
       <TabsContent value="wishlist"><p>Make changes to your account here.</p></TabsContent>
       <TabsContent value="account_settings">Change your password here.</TabsContent>
     </Tabs>
