@@ -23,7 +23,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
       alert(error)
     }
   }
-  console.log(poemData.poem_id)
+  // Hàm để tạo một bài thơ mới
   const handleCreatePoem = async () => {
     const formData = new FormData()
     formData.append("genre_id", "1")
