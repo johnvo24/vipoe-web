@@ -1,0 +1,52 @@
+import { AuthState, User } from "@/types/auth"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { fetchUser } from "./authThunks"
+
+
+const initialState: AuthState = {
+  user: null,
+  token: null,
+  loading: true,
+  error: null,
+  isAuthenticated: false
+}
+
+const authSlice = createSlice({
+  name: "auth", // prefix for action types
+  initialState, // initial state of the slice
+  reducers: {
+    logout: (state) => {
+      state.user = null
+      state.token = null
+      state.isAuthenticated = false
+    },
+    setToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload,
+      state.isAuthenticated = !!action.payload
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+    // Handle the fetchUser async thunk
+      .addCase(fetchUser.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchUser.fulfilled, (state, action: PayloadAction<User>) => {
+        state.user = action.payload
+        state.loading = false
+        state.isAuthenticated = true
+      })
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.user = null
+        state.token = null
+        state.loading = false
+        state.error = action.payload || "Unknown error"
+        state.isAuthenticated = false
+      })
+    // Handle other async thunks ...
+  }
+})
+
+export const { logout, setToken } = authSlice.actions
+export default authSlice.reducer

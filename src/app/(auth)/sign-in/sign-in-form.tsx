@@ -10,8 +10,10 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@/component
 import { UserCircle2, LockKeyhole } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/services'
-import { API_ROUTES } from '@/lib/routes'
+import { signIn } from '@/lib/api/auth'
+import { useAppDispatch } from '@/lib/hooks/reduxHooks'
+import { fetchUser } from '@/lib/store/auth/authThunks'
+import { setToken } from '@/lib/store/auth/authSlice'
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -26,6 +28,7 @@ type FormValues = z.infer<typeof formSchema>
 
 const SignInForm = () => {
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -34,22 +37,15 @@ const SignInForm = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-    },
+    defaultValues: { username: "", password: "",},
   })
 
   async function onSubmit(values: FormValues) {
     try {
-      const formData = new URLSearchParams()
-      formData.append("username", values.username)
-      formData.append("password", values.password)
-
-      const response = await api.post(API_ROUTES.SIGN_IN, formData, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" }
-      })
-      localStorage.setItem("token", response.data.access_token)
+      const data = await signIn(values.username, values.password)
+      localStorage.setItem("token", data.access_token)
+      await dispatch(fetchUser(data.access_token))
+      dispatch(setToken(data.access_token))
       router.push('/')
     } catch (error) {
       alert("Username or Password wrong")

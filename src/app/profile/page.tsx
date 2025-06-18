@@ -1,5 +1,5 @@
 import React from 'react'
-import Header from '@/components/header'
+import Header from '@/components/layout/Header'
 import TabsProfile from '@/app/profile/tabs'
 
 const Profile = () => {

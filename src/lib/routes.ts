@@ -10,6 +10,7 @@ export const API_ROUTES = {
   UPDATE_AVATAR: "/v1/user/profile/avatar",
   // Poem
   CRUD_POEM: "/v1/poem/",
+  GET_POEM_FEED: "/v1/poem/feed",
   // Collection
   CRUD_COLLECTION: "/v1/collection/",
 }

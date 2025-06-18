@@ -1,8 +1,8 @@
 import React from 'react'
-import Header from '@/components/header'
 import ShowPoem from './show_poem';
 import Link from 'next/link';
 import ShowWriters from './show_writer';
+import Header from '@/components/layout/Header';
 
 export default function Home() {
   return (

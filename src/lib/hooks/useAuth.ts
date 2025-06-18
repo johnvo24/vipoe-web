@@ -20,11 +20,20 @@ const useAuth = () => {
   const [user, setUser] = useState<User|null>(null)
   const [loading, setLoading] = useState(true)
 
+  
   useEffect(() => {
+    console.log("useAuth hook initialized")
     const token = localStorage.getItem("token")
     if (token) {
       try {
-        const decode: any = jwtDecode(token)
+        const payload: any = jwtDecode(token)
+        if (payload.exp * 1000 < Date.now()) {
+          localStorage.removeItem("token")
+          setUser(null)
+          setLoading(false)
+          return
+        }
+        
         api.get(API_ROUTES.GET_PROFILE, {
           headers: { Authorization: `Bearer ${token}` },
         })
