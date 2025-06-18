@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode"
 import { API_ROUTES } from "../routes"
 
 interface User {
+  id: number
   full_name: string
   username: string
   email: string
