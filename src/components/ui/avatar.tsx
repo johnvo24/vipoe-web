@@ -23,7 +23,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ src, alt, fallbackText, id, cla
         alt={alt || 'Avatar'}
       />
       <Avatar.Fallback
-        className='flex items-center justify-center w-full h-full bg-gray-400 text-white font-bold'
+        className='flex items-center justify-center w-full h-full bg-gray-400 text-white font-bold rounded-full'
         delayMs={600}
       >
         {fallbackText}

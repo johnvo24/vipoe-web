@@ -1,13 +1,21 @@
 'use client'
 
+import React, { useState, useRef } from 'react'
 import UserAvatar from "./avatar"
 import useAuth from "@/lib/hooks/useAuth"
-import { Focus, Bookmark, Heart, Forward, Download, BookmarkMinus } from 'lucide-react'
+import AutoResizeTextarea from '@/components/autoresize-textarea'
+import { Focus, Bookmark, Heart, Forward, Download, BookmarkMinus, ImagePlus, SquarePen } from 'lucide-react'
 import { useRouter, usePathname } from "next/navigation"
 import { api } from "@/lib/services"
 import { API_ROUTES } from "@/lib/routes"
 
 const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
+  const [image, setImage] = useState<File | null>(null)
+  const [preview, setPreview] = useState<string>(poemData.image_url || "/images/default-image.png")
+  const [editMode, setEditMode] = useState(false)
+  const [editedTitle, setEditedTitle] = useState(poemData.title)
+  const [editedContent, setEditedContent] = useState(poemData.content)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const pathname = usePathname()
   const { user } = useAuth()
@@ -54,8 +62,8 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
     formData.append("note", poemData.note || "")
     formData.append("tags", poemData.tags || "")
     formData.append("is_public", "false")
-    if (poemData.image instanceof File) {
-      formData.append("image", poemData.image)
+    if (image instanceof File) {
+      formData.append("image", image)
     }
     try {
       const token = localStorage.getItem("token")
@@ -84,6 +92,20 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
     }
   }
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setImage(file)
+      setPreview(URL.createObjectURL(file))
+    }
+  }
+  
+  const handleSave = () => {
+    poemData.title = editedTitle
+    poemData.content = editedContent
+    setEditMode(false)
+  }
+
   return (
     <div className={`${className} post-card p-2 bg-white rounded-lg shadow-sm`}>
       <div className="post-header flex justify-between p-2">
@@ -107,24 +129,79 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
         />
       </div>
       <div
-        className="p-6 text-center rounded-lg"
+        className="relative group mx-6 py-6 text-center rounded-lg hover:bg-gray-100 transition-colors duration-200"
         style={{
-          backgroundImage: `url('${poemData.image_url}')`,
+          backgroundImage: `url('${preview}')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           color: "#000",
         }}
       >
-        <p className="post-title text-xl font-bold mb-2">{poemData.title}</p>
-        <p className="text-base whitespace-pre-wrap">{`${poemData.content}`}</p>
+        {
+          editMode ? (
+            <>
+              <div className='absolute flex right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
+                <button
+                  type='button'
+                  className='me-2 bg-white p-1 rounded-md border border-gray-200 text-sm text-gray-700 cursor-pointer hover:opacity-75'
+                  onClick={() => setEditMode(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type='button'
+                  className='bg-black p-1 rounded-md text-sm text-white cursor-pointer hover:opacity-75'
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+              </div>
+              <input
+                type="text"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                className="post-title text-xl font-bold mb-2 text-center outline-none"
+              />
+              <AutoResizeTextarea
+                editedContent={editedContent}
+                setEditedContent={setEditedContent}
+              />
+            </>
+          ) : (
+            <>
+              <button
+                type='button'
+                className='absolute right-2 top-2 p-1 rounded-md cursor-pointer hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200'
+                onClick={() => setEditMode(true)}
+              >
+                <SquarePen size={20} className='text-gray-600' />
+              </button>
+              <p className="post-title text-xl font-bold mb-2">{poemData.title}</p>
+              <p className="text-base whitespace-pre-wrap">{`${poemData.content}`}</p>
+            </>
+          )
+        }
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleAvatarChange}
+        />
       </div>
       <div className="interaction-box flex mt-2 rounded-lg border">
         {
           pathname === '/write' ? (
-            <button onClick={handleCreatePoem} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-              <Download className="text-gray-600" size={20} />
-              <span className="text-start text-gray-700 font-medium">Save</span>
-            </button>
+            <>
+              <button onClick={handleCreatePoem} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
+                <Download className="text-gray-600" size={20} />
+                <span className="text-start text-gray-700 font-medium">Save</span>
+              </button>
+              <button onClick={() => fileInputRef.current?.click()} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
+                <ImagePlus className="text-gray-600" size={20} />
+                <span className="text-start text-gray-700 font-medium">Add Image</span>
+              </button>
+            </>
           ) : (
             <>
               {/* Nút Like */}
