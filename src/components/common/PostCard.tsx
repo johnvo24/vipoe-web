@@ -1,6 +1,6 @@
 'use client'
 
-import UserAvatar from "./avatar"
+import UserAvatar from "../ui/avatar"
 import useAuth from "@/lib/hooks/useAuth"
 import { Focus, Bookmark, Heart, Forward, Download, BookmarkMinus } from 'lucide-react'
 import { useRouter, usePathname } from "next/navigation"
@@ -85,18 +85,18 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
   }
 
   return (
-    <div className={`${className} post-card p-2 bg-white rounded-lg shadow-sm`}>
-      <div className="post-header flex justify-between p-2">
+    <div className={`${className} post-card p-1 bg-white rounded-lg mx-2 vi-border`}>
+      <div className="post-header flex justify-between p-1">
         <div className="info-box flex">
           <UserAvatar
             id={'post-avatar'}
-            className={"w-12 h-12 cursor-pointer mr-4"}
+            className={"w-9 h-9 cursor-pointer mr-4"}
             src={poemData.avt_url}
             alt={poemData.user_name}
             fallbackText={poemData.user_name.charAt(0).toUpperCase() || "U"}
           />
           <div className="info-text">
-            <p className="username text-lg font-bold -mb-1">{poemData.user_name}</p>
+            <p className="username text-base font -mb-1">{poemData.user_name}</p>
             <p className="time text-gray-500 text-sm">{poemData.created_at}</p>
           </div>
         </div>

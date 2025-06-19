@@ -9,10 +9,8 @@ export default function AppInit() {
   const dispatch = useAppDispatch()
   useEffect(() => {
     const token = localStorage.getItem("token")
-    if (token) {
-      dispatch(setToken(token))
-      dispatch(fetchUser(token))
-    }
+    dispatch(fetchUser(token))
+    if (token) dispatch(setToken(token))
   }, [dispatch])
   return null
 }

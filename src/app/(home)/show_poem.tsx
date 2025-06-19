@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import PostCard from '@/components/ui/post-card'
+import PostCard from '@/components/common/PostCard'
 import { useAppSelector } from '@/lib/hooks/reduxHooks'
 import { getPoemFeed } from '@/lib/api/poem'
 

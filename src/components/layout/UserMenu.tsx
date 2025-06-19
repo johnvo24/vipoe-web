@@ -12,6 +12,7 @@ import UserAvatar from '@/components/ui/avatar'
 const UserMenu: React.FC = () => {
   const user = useAppSelector((state) => state.auth.user)
   const loadingUser = useAppSelector((state) => state.auth.loading)
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const router = useRouter()
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -41,7 +42,8 @@ const UserMenu: React.FC = () => {
 
   if (loadingUser) {
     return <Skeleton className="w-9 h-9 rounded-full"/>
-  } else if (!user) {
+  } 
+  if (!isAuthenticated) {
     return <Button onClick={() => router.push('/sign-in')}>Login</Button>
   }
 
@@ -50,7 +52,7 @@ const UserMenu: React.FC = () => {
       <UserAvatar 
         id={'header-avatar'}
         className="w-9 h-9 cursor-pointer"
-        src={user.avt_url || 'https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg'}
+        src={user?.avt_url || 'https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg'}
         alt={"Johnny Dark"}
         fallbackText={"JD"}
         onClick={toggleDropdown}

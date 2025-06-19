@@ -19,7 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import PostCard from '@/components/ui/post-card'
+import PostCard from '@/components/common/PostCard'
 import { useRouter } from 'next/navigation'
 import { aiApi, api } from '@/lib/services'
 import { Skeleton } from '@/components/ui/skeleton'

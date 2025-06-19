@@ -14,7 +14,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ src, alt, fallbackText, id, cla
   return (
     <Avatar.Root 
       id={id}
-      className={`avatar ${className} inline-flex rounded-full w-10 h-10`}
+      className={`avatar ${className} inline-flex rounded-full vi-border-fainter`}
       onClick={onClick}
     >
       <Avatar.Image

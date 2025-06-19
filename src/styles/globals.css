@@ -156,3 +156,10 @@ body {
   font-weight: 700;
   src: url(/fonts/Inter-Bold.ttf);
 }
+
+.vi-border {
+  @apply border border-gray-300
+}
+.vi-border-fainter {
+  @apply border border-gray-100
+}

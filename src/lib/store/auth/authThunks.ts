@@ -5,20 +5,21 @@ import { User } from "@/types/auth"
 
 export const fetchUser = createAsyncThunk<
   User,
-  string, // token
+  string | null, // token
   { rejectValue: string }
 >(
   "auth/fetchUser",
   async (token, thunkAPI) => {
     try {
+      if (!token) return thunkAPI.rejectWithValue("No access token")
       const payload: any = jwtDecode(token)
       if (payload.exp * 1000 < Date.now()) {
-        return thunkAPI.rejectWithValue("Token expired")
+        return thunkAPI.rejectWithValue("Access token expired")
       }
       const user = await getProfile(token)
       return user
     } catch {
-      return thunkAPI.rejectWithValue("Invalid token or failed to fetch profile")
+      return thunkAPI.rejectWithValue("Invalid access token or failed to fetch profile")
     }
   }
 )
