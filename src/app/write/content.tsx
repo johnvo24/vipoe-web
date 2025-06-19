@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import useAuth from '@/lib/hooks/useAuth'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { cn } from "@/lib/utils"
 import {
   Command,
@@ -13,7 +13,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Pencil, History } from "lucide-react"
 import {
   Popover,
   PopoverContent,
@@ -95,67 +95,73 @@ const Content = () => {
 
   return (
     <div className="main pt-12 w-full">
-      <div className='content bg-white mx-auto flex flex-col items-center w-8/12 min-w-[960px] my-4 py-4 rounded-lg'>
-        <div className='w-3/4 flex flex-col items-center'>
-          <div className='flex w-full justify-between items-center'>
-            <div className='w-4/6 mr-2'>
-              <p className='w-full text-start text-lg mb-1 text-gray-700'>Prompt:</p>
-              <Input className='bg-white' placeholder='Enter promt' size={1} onChange={(e) => setPrompt(e.target.value)} />
-            </div>
-            <div className='w-2/6'>
-              <p className='w-full text-start text-lg mb-1 text-gray-700'>Model:</p>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between"
-                    size="lg"
-                  >
-                    {model
-                      ? frameworks.find((models) => models.model === model)?.label
-                      : "Select model..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search model..." />
-                    <CommandList>
-                      <CommandEmpty>No model found.</CommandEmpty>
-                      <CommandGroup>
-                        {frameworks.map((models) => (
-                          <CommandItem
-                            key={models.model}
-                            value={models.model}
-                            onSelect={(currentValue) => {
-                              setModel(currentValue === model ? "" : currentValue)
-                              setOpen(false)
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                model === models.model ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {models.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+      <div className='flex justify-between w-8/12 min-w-[960px] mx-auto mt-4'>
+        <div className='w-[60%] bg-white p-4 rounded-lg shadow-sm'>
+          <p className='text-2xl text-black mb-2 font-semibold'>
+            <Pencil className='inline mr-2' />
+            Create new poem
+          </p>
+          <p className='text-md text-gray-700'>Enter your prompt:</p>
+          <Textarea placeholder='VD: Make a luc bat poem,...' onChange={(e) => setPrompt(e.target.value)}/>
+          <p className='text-md mt-2 text-gray-700'>Model:</p>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between text-gray-600"
+                size="lg"
+              >
+                {model
+                  ? frameworks.find((models) => models.model === model)?.label
+                  : "Select model..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Search model..." />
+                <CommandList>
+                  <CommandEmpty>No model found.</CommandEmpty>
+                  <CommandGroup>
+                    {frameworks.map((models) => (
+                      <CommandItem
+                        key={models.model}
+                        value={models.model}
+                        onSelect={(currentValue) => {
+                          setModel(currentValue === model ? "" : currentValue)
+                          setOpen(false)
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            model === models.model ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {models.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
           <Button className='mt-4' type='button' onClick={generatePoem}>
             Generate Poem
           </Button>
         </div>
+        <div className='w-[40%] bg-white p-4 rounded-lg flex justify-center items-center ms-4 shadow-sm'>
+          <p>
+            <History className='inline mr-2' />
+            History
+          </p>
+        </div>
+      </div>
+      <div className='content bg-white mx-auto flex flex-col items-center w-8/12 min-w-[960px] my-4 py-4 rounded-lg shadow-sm'>
         <div className='w-3/4 items-center'>
-          <p className='w-full text-start text-lg mb-1 text-gray-700'>Preview:</p>
+          <p className='w-full text-start text-xl text-black font-semibold'>Preview:</p>
           <hr className="mt-1 mb-4 w-full border-dashed border-gray-500" />
           <div className="preview bg-gradient-to-tr from-gray-700 via-gray-400 to-gray-300 p-12">
             <PostCard className={''} poemData={poemData} />
