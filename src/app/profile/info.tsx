@@ -14,8 +14,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { api } from '@/lib/services'
-import { API_ROUTES } from '@/lib/routes'
+import { updateProfile, updateAvatar } from '@/lib/api/auth'
 
 const AccountInformation = (props: any) => {
   const [data, setData] = useState({
@@ -40,9 +39,7 @@ const AccountInformation = (props: any) => {
     try {
       const token = localStorage.getItem("token")
       if (token) {
-        await api.put(API_ROUTES.UPDATE_PROFILE, data, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await updateProfile(token, data)
         alert("Edited Successful")
       }
     } catch (error) {
@@ -65,12 +62,8 @@ const AccountInformation = (props: any) => {
       try {
         const token = localStorage.getItem("token")
         if (token) {
-          const response = await api.put(API_ROUTES.UPDATE_AVATAR, formData, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          if (response.status === 200) {
+          const response = await updateAvatar(token, formData)
+          if (response !== null) {
             alert("Avatar updated successfully")
             setAvatar(null)
           } else {

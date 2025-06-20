@@ -5,7 +5,7 @@ import AccountInformation from '@/app/profile/info'
 import useAuth from '@/lib/hooks/useAuth'
 import MyPoem from './my-poem'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { api } from '@/lib/services'
+import { getProfile } from '@/lib/api/auth'
 
 interface User {
   full_name: string
@@ -20,21 +20,24 @@ interface User {
 
 const TabsProfile = () => {
   const { user, loading } = useAuth()
-  const [userData, setUserData] = useState<User|null>(null)
+  const [userData, setUserData] = useState<User | null>(null)
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token")
-        const response = await api.get("/v1/user/profile", {
-          headers: { Authorization: `Bearer ${token}`},
-        })
-        setUserData(response.data)
+        if (token) {
+          const response = await getProfile(token)
+          setUserData(response)
+        } else {
+          console.error("No token found in localStorage")
+          setUserData(null)
+        }
       } catch (error) {
         console.error("Failed to fetch profile:", error)
       }
     }
-  
+
     if (user) {
       fetchProfile()
     }

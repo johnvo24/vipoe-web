@@ -19,3 +19,26 @@ export const getProfile = async (token: string): Promise<User> => {
   })
   return res.data
 }
+
+export async function updateProfile(token: string, data: any): Promise<void> {
+  await api.put(API_ROUTES.UPDATE_PROFILE, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function updateAvatar(token: string, formData: any): Promise<Object> {
+  const res = await api.put(API_ROUTES.UPDATE_AVATAR, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return res.data
+}
+
+export async function signUp(data: any) {
+  await api.post(API_ROUTES.SIGN_UP, data)
+}
+
+export async function verifyEmail(token: string) {
+  await api.post(`${API_ROUTES.VERIFY_EMAIL}/${token}`)
+}
