@@ -11,8 +11,11 @@ import Link from 'next/link'
 import useEmblaCarousel from 'embla-carousel-react'
 import InteractionBox from './InteractionBox'
 import { saveToCollection, createPoem, removeFromCollection } from '@/lib/api/poem'
+import PoemCarousel from './PoemCarousel'
+import { useAppSelector } from '@/lib/hooks/reduxHooks'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
+  const token = useAppSelector((state) => state.auth.token)
   const [image, setImage] = useState<File | null>(null)
   const [preview, setPreview] = useState<string>(poemData.image_url || "/images/default-image.png")
   const [editMode, setEditMode] = useState(false)
@@ -21,42 +24,36 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const pathname = usePathname()
-  const { user } = useAuth()
 
-  const handleSaveToCol = async () => {
+  const handleSavePoem = async () => {
     try {
-      const token = localStorage.getItem("token")
       if (token) {
         const response = await saveToCollection(poemData.id, token)
-        alert(response)
+        alert("Saved to collection successfully")
+        console.log(response)
       } else {
-        alert("You must be logged in to save a poem to your collection.")
+        alert("Not logged in!")
       }
     } catch (error) {
-      alert(error)
+      console.error("Error saving to collection:", error)
     }
   }
 
-  const handleRemoveFromCol = async () => {
+  const handleUnsavePoem = async () => {
+    if (!token) {
+      alert("You must be logged in to remove a poem.")
+      return
+    }
     try {
-      const token = localStorage.getItem("token")
-      if (!token) {
-        alert("You must be logged in to remove a poem.")
-        return
-      }
       await removeFromCollection(token, poemData.id)
-      alert("Poem removed to collection successfully")
+      alert("Poem removed from collection successfully")
       router.push('/collection')
     } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.message) {
-        alert(error.response.data.message)
-      } else {
-        alert("Đã có lỗi xảy ra khi xóa khỏi bộ sưu tập.")
-      }
+      const message = error?.response?.data?.message || "Đã có lỗi xảy ra khi xóa khỏi bộ sưu tập."
+      alert(message)
     }
   }
 
-  // Hàm để tạo một bài thơ mới
   const handleCreatePoem = async () => {
     const formData = new FormData()
     formData.append("genre_id", "1")
@@ -152,32 +149,10 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
           <MoreVertical size={16} className="text-gray-600 group-hover:text-black transition-colors" />
         </button>
       </div>
-      <div className="poem-box scrollbar-hidden overflow-hidden ps-14 pe-[22px]"
-        ref={emblaRef}
-      >
-        <div className="poem-content flex gap-2">
-          {[1, 2, 3, 4, 5].map((item, idx) => (
-            <div
-              key={idx}
-              className="keen-slider__slide relative w-[264px] sm:w-[480px] max-h-[480px] rounded-lg overflow-hidden flex-shrink-0 vi-border"
-            >
-              <img
-                src={poemData.image_url || "/images/bg-stmpt.jpg"}
-                alt="Image"
-                loading="lazy"
-                className="object-cover w-full h-full"
-              />
-              <div className="absolute inset-0 bg-white/15 flex flex-col justify-center items-center p-3 z-10">
-                <p className="font-bold text-base mb-2 text-center truncate">{poemData.title}</p>
-                <p className="text-sm text-gray-700 text-center whitespace-pre-wrap overflow-hidden line-clamp-4">
-                  {poemData.content}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="relative group mx-6 py-6 text-center rounded-lg hover:bg-gray-100 transition-colors duration-200  border hidden"
+      
+      <PoemCarousel poemData={poemData} />
+
+      {/* <div className="relative group mx-6 py-6 text-center rounded-lg hover:bg-gray-100 transition-colors duration-200  border hidden"
         style={{
           backgroundImage: `url('${preview}')`,
           backgroundSize: "cover",
@@ -236,11 +211,17 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
           ref={fileInputRef}
           onChange={handleAvatarChange}
         />
-      </div>
+      </div> */}
       <InteractionBox 
-        editMode={false} 
-        isLiked={false} 
-        isSaved={false} 
+        editMode={false}
+        isLiked={false}
+        isSaved={false}
+        onLikePoem={() => {}}
+        OnUnlikePoem={() => {}}
+        onCreatePoem={handleCreatePoem}
+        onAddImage={() => fileInputRef.current?.click()}
+        onSavePoem={handleSavePoem}
+        onUnsavePoem={handleUnsavePoem}
       />
     </div>
   )
