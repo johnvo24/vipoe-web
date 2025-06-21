@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import useAuth from '@/lib/hooks/useAuth'
-import PostCard from '@/components/common/PostCard'
+import PostCard from '@/components/post/PostCard'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/services'
 import { API_ROUTES } from '@/lib/routes'

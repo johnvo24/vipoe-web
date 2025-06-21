@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./components.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -155,41 +156,4 @@ body {
   font-style: normal;
   font-weight: 700;
   src: url(/fonts/Inter-Bold.ttf);
-}
-
-.vi-border {
-  @apply border border-gray-300
-}
-.vi-border-fainter {
-  @apply border border-gray-100
-}
-
-.text-15px {font-size: 15px;}
-.vi-text-primary {
-  @apply text-black dark:text-white;
-}
-.vi-text-second {
-  @apply text-gray-500
-}
-
-.vi-button {
-  @apply flex items-center justify-center rounded-full p-2 bg-transparent border-none cursor-pointer transition relative overflow-hidden;
-}
-.vi-button::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: oklch(0.21 0.034 264.665 / 0.08);
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-}
-.vi-button:hover::after,
-.vi-button:focus-visible::after,
-.vi-button:active::after {
-  opacity: 1;
-}
-.vi-button:active::after {
-  background: oklch(0.21 0.034 264.665 / 0.16);
 }

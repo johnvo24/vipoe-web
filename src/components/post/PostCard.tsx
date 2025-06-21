@@ -9,6 +9,9 @@ import { api } from "@/lib/services"
 import { API_ROUTES } from "@/lib/routes"
 import UserAvatar from '@/components/ui/avatar'
 import { timeAgo } from '@/lib/utils'
+import Link from 'next/link'
+import useEmblaCarousel from 'embla-carousel-react'
+import InteractionBox from './InteractionBox'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
   const [image, setImage] = useState<File | null>(null)
@@ -107,9 +110,15 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
     setEditMode(false)
   }
 
+  const [emblaRef] = useEmblaCarousel({
+    align: 'start',
+    dragFree: false,
+    containScroll: 'trimSnaps',
+  })
+
   return (
-    <div className={`${className} post-card p-2 bg-white rounded-lg mx-2 vi-border`}>
-      <div className="post-header flex justify-between m-1">
+    <div className={`${className} post-card bg-white rounded-2xl relative w-full overflow-hidden vi-shadow`}>
+      <div className="post-header px-2 pt-2 flex justify-between mt-1 mb-2">
         <div className="info-box flex">
           <UserAvatar
             id={'post-avatar'}
@@ -128,19 +137,52 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
                 : <GlobeLock size={16} className="ml-2 vi-text-second"/>
               }
             </div>
-            <p className="note text-15px -mt-0.5">{ poemData.note } Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus repudiandae pariatur ullam? Veritatis itaque vel, incidunt facilis numquam libero molestias unde amet consequuntur aliquid doloremque totam dolor! Excepturi, ex sed?</p>
+            <div className="post-description">
+              <p className="note text-15px leading-[1.3]">{ poemData.note } Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus repudiandae pariatur ullam? Veritatis itaque vel.</p>
+              <div className="tags leading-[1]">
+                <Link className="text-sm font-semibold me-1" href={'#'} >#quê hương</Link>
+                <Link className="text-sm font-semibold me-1" href={'#'} >#tình yêu</Link>
+                <Link className="text-sm font-semibold me-1" href={'#'} >#học đường</Link>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+      <div className="addition-btn absolute top-2 right-2 z-1">
         <button
           type="button"
-          className="vi-button self-start"
+          className="vi-button"
           onClick={() => {/* mở menu hoặc xử lý mở rộng ở đây */}}
         >
           <MoreVertical size={16} className="text-gray-600 group-hover:text-black transition-colors" />
         </button>
       </div>
-      <div
-        className="relative group mx-6 py-6 text-center rounded-lg hover:bg-gray-100 transition-colors duration-200"
+      <div className="poem-box scrollbar-hidden overflow-hidden ps-14 pe-[22px]"
+        ref={emblaRef}
+      >
+        <div className="poem-content flex gap-2">
+          {[1, 2, 3, 4, 5].map((item, idx) => (
+            <div
+              key={idx}
+              className="keen-slider__slide relative w-[264px] sm:w-[480px] max-h-[480px] rounded-lg overflow-hidden flex-shrink-0 vi-border"
+            >
+              <img
+                src={poemData.image_url || "/images/bg-stmpt.jpg"}
+                alt="Image"
+                loading="lazy"
+                className="object-cover w-full h-full"
+              />
+              <div className="absolute inset-0 bg-white/15 flex flex-col justify-center items-center p-3 z-10">
+                <p className="font-bold text-base mb-2 text-center truncate">{poemData.title}</p>
+                <p className="text-sm text-gray-700 text-center whitespace-pre-wrap overflow-hidden line-clamp-4">
+                  {poemData.content}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="relative group mx-6 py-6 text-center rounded-lg hover:bg-gray-100 transition-colors duration-200  border hidden"
         style={{
           backgroundImage: `url('${preview}')`,
           backgroundSize: "cover",
@@ -200,54 +242,11 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
           onChange={handleAvatarChange}
         />
       </div>
-      <div className="interaction-box flex mt-2 rounded-lg border">
-        {
-          pathname === '/write' ? (
-            <>
-              <button onClick={handleCreatePoem} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-                <Download className="text-gray-600" size={20} />
-                <span className="text-start text-gray-700 font-medium">Save</span>
-              </button>
-              <button onClick={() => fileInputRef.current?.click()} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-                <ImagePlus className="text-gray-600" size={20} />
-                <span className="text-start text-gray-700 font-medium">Add Image</span>
-              </button>
-            </>
-          ) : (
-            <>
-              {/* Nút Like */}
-              <button className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-                <Heart className="text-gray-600" size={20} />
-                {/* <FaHeart className="text-red-500" size={20} /> */}
-                <span className="w-16 text-start text-gray-700 font-medium">120</span>
-              </button>
-
-              {/* Nút Save */}
-              {
-                user?.id === poemData.user_id ? (
-                  <button onClick={handleRemoveFromCol} className="action-btn bg-red-400 flex flex-1 items-center justify-center space-x-2 hover:opacity-75 p-2 rounded-md">
-                    <BookmarkMinus className="text-gray-100" size={20} />
-                    {/* <FaBookmark className="text-yellow-500" size={20} /> */}
-                    <span className="w-16 text-start text-gray-100 font-medium">Remove</span>
-                  </button>
-                ) : (
-                  <button onClick={handleSaveToCol} className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-                    <Bookmark className="text-gray-600" size={20} />
-                    {/* <FaBookmark className="text-yellow-500" size={20} /> */}
-                    <span className="w-16 text-start text-gray-700 font-medium">45</span>
-                  </button>
-                )
-              }
-
-              {/* Nút Share */}
-              <button className="action-btn flex flex-1 items-center justify-center space-x-2 hover:bg-gray-200 p-2 rounded-md">
-                <Forward className="text-gray-600" size={21} />
-                <span className="text-start text-gray-700 font-medium">Share</span>
-              </button>
-            </>
-          )
-        }
-      </div>
+      <InteractionBox 
+        editMode={false} 
+        isLiked={false} 
+        isSaved={false} 
+      />
     </div>
   )
 }

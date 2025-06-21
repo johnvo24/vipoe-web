@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ className }) => {
   return (
-    <div className={`${className} header flex w-full justify-between bg-background shadow-md z-10`}>
+    <div className={`${className} header flex w-full justify-between bg-background vi-shadow-b z-5`}>
       <div className="logo_box w-24">
         <p className="logo-text h-full font-bold content-center text-lg text-center tracking-widest">VIPOE</p>
       </div>

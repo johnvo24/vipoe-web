@@ -1,14 +1,13 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import PostCard from '@/components/common/PostCard'
+import PostCard from '@/components/post/PostCard'
 import { useAppSelector } from '@/lib/hooks/reduxHooks'
 import { getPoemFeed } from '@/lib/api/poem'
 
 const ShowPoem = () => {
   const [poems, setPoems] = useState<any[]>([])
   const user = useAppSelector((state) => state.auth.user)
-  // const loadingUser = useAppSelector((state) => state.auth.loading)
 
   const fetchData = async () => {
     try {
