@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button"
 import * as Menubar from '@radix-ui/react-menubar'
 import { SquareUser, Settings, LogOut } from 'lucide-react'
 import UserAvatar from '@/components/ui/avatar'
+import { selectAuthLoading, selectIsAuthenticated, selectUser } from '@/lib/store/auth/authSlice'
 
 const UserMenu: React.FC = () => {
-  const user = useAppSelector((state) => state.auth.user)
-  const loadingUser = useAppSelector((state) => state.auth.loading)
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
+  const user = useAppSelector(selectUser)
+  const authLoading = useAppSelector(selectAuthLoading)
+  const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const router = useRouter()
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -40,7 +41,7 @@ const UserMenu: React.FC = () => {
     }
   }, [])
 
-  if (loadingUser) {
+  if (authLoading) {
     return <Skeleton className="w-9 h-9 rounded-full"/>
   } 
   if (!isAuthenticated) {

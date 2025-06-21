@@ -16,3 +16,13 @@ export interface Poem {
   genre_name: string
   tags: string[]
 }
+
+export interface PoemFeedState {
+  poems: Poem[]
+  loading: boolean
+  error: string | null
+  hasMore: boolean
+  offset: number
+  limit: number
+  isInitialLoading: boolean
+}

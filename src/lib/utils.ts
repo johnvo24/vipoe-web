@@ -43,3 +43,7 @@ export function formatNumber(num: number): string {
     return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B'
   }
 }
+
+export const delay = (ms: number): Promise<void> => {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}

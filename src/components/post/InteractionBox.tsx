@@ -7,6 +7,8 @@ interface Props {
   editMode: boolean;
   isLiked?: boolean;
   isSaved?: boolean;
+  onLikePoem?: () => void;
+  OnUnlikePoem?: () => void;
   onCreatePoem?: () => void;
   onAddImage?: () => void;
   onSavePoem?: () => void;
@@ -17,6 +19,8 @@ const InteractionBox = ({
   editMode,
   isLiked,
   isSaved,
+  onLikePoem,
+  OnUnlikePoem,
   onCreatePoem,
   onAddImage,
   onSavePoem,
@@ -42,12 +46,12 @@ const InteractionBox = ({
   return (
     <div className="interaction-box vi-text-third flex rounded-lg pt-0.5 ml-11 pb-1">
       { isLiked ? (
-        <button className="action-btn flex items-center vi-button px-3 gap-1">
+        <button onClick={OnUnlikePoem} className="action-btn flex items-center vi-button px-3 gap-1">
           <Heart className="fill-current text-red-500" size={16} />
           <span className="text-sm">{ formatNumber(1240) }</span>
         </button>
       ) : (
-        <button className="action-btn flex items-center vi-button px-3 gap-1">
+        <button onClick={onLikePoem}className="action-btn flex items-center vi-button px-3 gap-1">
           <Heart className="" size={16} />
           <span className="text-sm">{ formatNumber(1239) }</span>
         </button>
