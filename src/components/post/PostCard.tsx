@@ -5,13 +5,12 @@ import useAuth from "@/lib/hooks/useAuth"
 import AutoResizeTextarea from '@/components/autoresize-textarea'
 import { Focus, Bookmark, Heart, Forward, Download, BookmarkMinus, ImagePlus, SquarePen, Globe, Lock, GlobeLock, MoreVertical } from 'lucide-react'
 import { useRouter, usePathname } from "next/navigation"
-import { api } from "@/lib/services"
-import { API_ROUTES } from "@/lib/routes"
 import UserAvatar from '@/components/ui/avatar'
 import { timeAgo } from '@/lib/utils'
 import Link from 'next/link'
 import useEmblaCarousel from 'embla-carousel-react'
 import InteractionBox from './InteractionBox'
+import { saveToCollection, createPoem, removeFromCollection } from '@/lib/api/poem'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
   const [image, setImage] = useState<File | null>(null)
@@ -27,11 +26,11 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
   const handleSaveToCol = async () => {
     try {
       const token = localStorage.getItem("token")
-      const response = await api.post(API_ROUTES.CRUD_COLLECTION + `${poemData.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (response.status === 200 || response.status === 201) {
-        alert("Poem added to collection successfully")
+      if (token) {
+        const response = await saveToCollection(poemData.id, token)
+        alert(response)
+      } else {
+        alert("You must be logged in to save a poem to your collection.")
       }
     } catch (error) {
       alert(error)
@@ -41,12 +40,13 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
   const handleRemoveFromCol = async () => {
     try {
       const token = localStorage.getItem("token")
-      const response = await api.delete(API_ROUTES.CRUD_COLLECTION + `${poemData.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (response.status === 200 || response.status === 204) {
-        alert("Poem removed to collection successfully")
+      if (!token) {
+        alert("You must be logged in to remove a poem.")
+        return
       }
+      await removeFromCollection(token, poemData.id)
+      alert("Poem removed to collection successfully")
+      router.push('/collection')
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.message) {
         alert(error.response.data.message)
@@ -75,13 +75,8 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
         alert("You must be logged in to create a poem.")
         return
       }
-      const response = await api.post(API_ROUTES.CRUD_POEM, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      if (response && (response.status === 201 || response.status === 200)) {
+      const response = await createPoem(token, formData)
+      if (response !== null) {
         alert("Poem created successfully")
         router.push('/')
       } else {
