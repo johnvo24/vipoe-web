@@ -2,6 +2,9 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import { jwtDecode } from "jwt-decode"
 import { getProfile } from "@/lib/api/auth"
 import { User } from "@/types/auth"
+import { AppThunk } from "@/lib/store"
+import { resetAuth } from "./authSlice"
+import { resetFeed } from "../poem/poemFeedSlice"
 
 export const fetchUser = createAsyncThunk<
   User,
@@ -23,3 +26,12 @@ export const fetchUser = createAsyncThunk<
     }
   }
 )
+
+export const logout = (): AppThunk => {
+  return (dispatch) => {
+    console.log("Logging out...")
+    localStorage.removeItem("token")
+    dispatch(resetAuth())
+    dispatch(resetFeed())
+  }
+}

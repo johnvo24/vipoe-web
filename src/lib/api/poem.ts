@@ -35,9 +35,11 @@ export async function deletePoem(token: string, poemId: number): Promise<void> {
   })
 }
 
-export async function getPoemFeed(offset: number, limit: number): Promise<Poem[]> {
+export async function getPoemFeed(offset: number, limit: number, token: string | null): Promise<Poem[]> {
+  const headers = token ? { Authorization: `Bearer ${token}` } : undefined
   const res = await api.get(API_ROUTES.GET_POEM_FEED, {
     params: { offset, limit },
+    headers,
   })
   return res.data
 }
@@ -50,11 +52,10 @@ export async function getPoemInCollection(token: string): Promise<Poem[]> {
 }
 
 export async function saveToCollection(poem_id: number, token: string): Promise<Object> {
-  console.log(token)
   const res = await api.post(`${API_ROUTES.CRUD_COLLECTION}${poem_id}`, null, {
     headers: { Authorization: `Bearer ${token}` },
   })
-  return res.data.message
+  return res.data
 }
 
 export async function removeFromCollection(token: string, poemId: number): Promise<void> {

@@ -23,7 +23,6 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
   const [editedContent, setEditedContent] = useState(poemData.content)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
-  const pathname = usePathname()
 
   const handleSavePoem = async () => {
     try {
@@ -88,26 +87,6 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
     }
   }
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setImage(file)
-      setPreview(URL.createObjectURL(file))
-    }
-  }
-  
-  const handleSave = () => {
-    poemData.title = editedTitle
-    poemData.content = editedContent
-    setEditMode(false)
-  }
-
-  const [emblaRef] = useEmblaCarousel({
-    align: 'start',
-    dragFree: false,
-    containScroll: 'trimSnaps',
-  })
-
   return (
     <div className={`${className} post-card bg-white rounded-2xl relative w-full overflow-hidden vi-shadow`}>
       <div className="post-header px-2 pt-2 flex justify-between mt-1 mb-2">
@@ -163,7 +142,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
         {
           editMode ? (
             <>
-              <div className='absolute flex right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
+            <div className='absolute flex right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
                 <button
                   type='button'
                   className='me-2 bg-white p-1 rounded-md border border-gray-200 text-sm text-gray-700 cursor-pointer hover:opacity-75'
@@ -215,7 +194,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
       <InteractionBox 
         editMode={false}
         isLiked={false}
-        isSaved={false}
+        isSaved={poemData.is_saved}
         onLikePoem={() => {}}
         OnUnlikePoem={() => {}}
         onCreatePoem={handleCreatePoem}
