@@ -15,6 +15,7 @@ export interface Poem {
   avt_url: string
   genre_name: string
   tags: string[]
+  is_saved: boolean
 }
 
 export interface PoemFeedState {

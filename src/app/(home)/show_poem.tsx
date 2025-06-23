@@ -4,7 +4,8 @@ import React, { useEffect, useCallback } from 'react'
 import PostCard from '@/components/post/PostCard'
 import { useAppSelector, useAppDispatch } from '@/lib/hooks/reduxHooks'
 import { fetchPoemFeed } from '@/lib/store/poem/poemFeedThunks'
-import { selectPoems, selectPoemFeedLoading, selectPoemFeedError, selectIsInitialLoading, selectHasMore, selectOffset } from '@/lib/store/poem/poemFeedSlice'
+import { selectPoems, selectPoemFeedLoading, selectPoemFeedError, selectIsInitialLoading, selectHasMore, selectOffset, resetFeed } from '@/lib/store/poem/poemFeedSlice'
+import { useRouter } from 'next/navigation'
 
 const ShowPoem = () => {
   const dispatch = useAppDispatch()
@@ -14,11 +15,10 @@ const ShowPoem = () => {
   const isInitialLoading = useAppSelector(selectIsInitialLoading)
   const hasMore = useAppSelector(selectHasMore)
   const offset = useAppSelector(selectOffset)
+  const router = useRouter()
 
   useEffect(() => {
-    if (isInitialLoading) {
-      dispatch(fetchPoemFeed({ offset: 0, limit: 10, reset: true }))
-    }
+    if (isInitialLoading) dispatch(fetchPoemFeed({ offset: 0, limit: 10, reset: true }))
   }, [dispatch, isInitialLoading])
 
   const loadMorePoems = useCallback(() => {
@@ -26,6 +26,15 @@ const ShowPoem = () => {
       dispatch(fetchPoemFeed({ offset: Number(offset), limit: 10, reset: false }))
     }
   }, [dispatch, loading, hasMore, offset])
+
+  useEffect(() => {
+    if (error === 'LOGGED_OUT') {
+      dispatch(resetFeed())
+    }
+    if (error && error !== 'LOGGED_OUT') {
+      console.error('Fetch Poem Error:', error)
+    }
+  }, [error, router])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,14 +52,6 @@ const ShowPoem = () => {
       <header className="flex justify-center p-4 shadow-md">
         <span>Loading...</span>
       </header>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center p-4">
-        <p className="text-red-500">Error: {error}</p>
-      </div>
     )
   }
 

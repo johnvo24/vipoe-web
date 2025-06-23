@@ -22,6 +22,7 @@ const poemFeedSlice = createSlice({
       state.hasMore = true
       state.error = null
       state.loading = false
+      state.isInitialLoading = true
     },
     updatePoem: (state, action: PayloadAction<{ id: string; updates: Partial<Poem> }>) => {
       const { id, updates } = action.payload
