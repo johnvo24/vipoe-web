@@ -58,7 +58,7 @@ export async function saveToCollection(poem_id: number, token: string): Promise<
   return res.data
 }
 
-export async function removeFromCollection(token: string, poemId: number): Promise<void> {
+export async function removeFromCollection(poemId: number, token: string): Promise<void> {
   await api.delete(`${API_ROUTES.CRUD_COLLECTION}${poemId}/`, {
     headers: { Authorization: `Bearer ${token}` },
   })

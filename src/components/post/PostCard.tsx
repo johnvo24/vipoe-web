@@ -12,10 +12,14 @@ import useEmblaCarousel from 'embla-carousel-react'
 import InteractionBox from './InteractionBox'
 import { saveToCollection, createPoem, removeFromCollection } from '@/lib/api/poem'
 import PoemCarousel from './PoemCarousel'
-import { useAppSelector } from '@/lib/hooks/reduxHooks'
+import { useAppDispatch, useAppSelector } from '@/lib/hooks/reduxHooks'
+import { selectIsAuthenticated, selectToken } from '@/lib/store/auth/authSlice'
+import { updatePoem } from '@/lib/store/poem/poemFeedSlice'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
-  const token = useAppSelector((state) => state.auth.token)
+  const dispatch = useAppDispatch()
+  const token = useAppSelector(selectToken)
+  const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const [image, setImage] = useState<File | null>(null)
   const [preview, setPreview] = useState<string>(poemData.image_url || "/images/default-image.png")
   const [editMode, setEditMode] = useState(false)
@@ -25,30 +29,28 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
   const router = useRouter()
 
   const handleSavePoem = async () => {
+    if (!isAuthenticated || !token) {
+      alert("Not logged in!")
+      return
+    }
     try {
-      if (token) {
-        const response = await saveToCollection(poemData.id, token)
-        alert("Saved to collection successfully")
-        console.log(response)
-      } else {
-        alert("Not logged in!")
-      }
+      const response = await saveToCollection(poemData.id, token)
+      dispatch(updatePoem({id: poemData.id, updates: { is_saved: true }}))
     } catch (error) {
       console.error("Error saving to collection:", error)
     }
   }
 
   const handleUnsavePoem = async () => {
-    if (!token) {
+    if (!isAuthenticated || !token) {
       alert("You must be logged in to remove a poem.")
       return
     }
     try {
-      await removeFromCollection(token, poemData.id)
-      alert("Poem removed from collection successfully")
-      router.push('/collection')
+      await removeFromCollection(poemData.id, token)
+      dispatch(updatePoem({id: poemData.id, updates: { is_saved: false }}))
     } catch (error: any) {
-      const message = error?.response?.data?.message || "Đã có lỗi xảy ra khi xóa khỏi bộ sưu tập."
+      const message = error?.response?.data?.message || "Error removing poem from collection."
       alert(message)
     }
   }

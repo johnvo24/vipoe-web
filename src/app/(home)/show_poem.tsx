@@ -6,9 +6,11 @@ import { useAppSelector, useAppDispatch } from '@/lib/hooks/reduxHooks'
 import { fetchPoemFeed } from '@/lib/store/poem/poemFeedThunks'
 import { selectPoems, selectPoemFeedLoading, selectPoemFeedError, selectIsInitialLoading, selectHasMore, selectOffset, resetFeed } from '@/lib/store/poem/poemFeedSlice'
 import { useRouter } from 'next/navigation'
+import { selectToken } from '@/lib/store/auth/authSlice'
 
 const ShowPoem = () => {
   const dispatch = useAppDispatch()
+  const token = useAppSelector(selectToken)
   const poems = useAppSelector(selectPoems)
   const loading = useAppSelector(selectPoemFeedLoading)
   const error = useAppSelector(selectPoemFeedError)
@@ -35,6 +37,10 @@ const ShowPoem = () => {
       console.error('Fetch Poem Error:', error)
     }
   }, [error, router])
+
+  useEffect(() => {
+    dispatch(resetFeed())
+  }, [token])
 
   useEffect(() => {
     const handleScroll = () => {
