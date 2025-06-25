@@ -4,11 +4,11 @@ import { fetchPoemFeed } from './poemFeedThunks'
 
 const initialState: PoemFeedState = {
   poems: [],
-  loading: true,
+  loading: false,
   error: null,
   hasMore: true,
   offset: 0,
-  limit: 20,
+  limit: 10,
   isInitialLoading: true
 }
 
@@ -47,10 +47,12 @@ const poemFeedSlice = createSlice({
       })
       .addCase(fetchPoemFeed.fulfilled, (state, action) => {
         const { poems, hasMore } = action.payload
-        
-        state.offset += poems.length
-        state.poems.push(...poems)
-        
+
+        const existingIds = new Set(state.poems.map(poem => poem.id))
+        const newPoems = poems.filter(poem => !existingIds.has(poem.id))
+
+        state.offset += newPoems.length
+        state.poems.push(...newPoems)
         state.hasMore = hasMore
         state.loading = false
         state.isInitialLoading = false

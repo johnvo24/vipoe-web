@@ -15,6 +15,7 @@ import PoemCarousel from './PoemCarousel'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/reduxHooks'
 import { selectIsAuthenticated, selectToken } from '@/lib/store/auth/authSlice'
 import { updatePoem } from '@/lib/store/poem/poemFeedSlice'
+import { removePoemFromCollection, resetCollection } from '@/lib/store/collection/collectionSlice'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
   const dispatch = useAppDispatch()
@@ -36,6 +37,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
     try {
       const response = await saveToCollection(poemData.id, token)
       dispatch(updatePoem({id: poemData.id, updates: { is_saved: true }}))
+      dispatch(resetCollection())
     } catch (error) {
       console.error("Error saving to collection:", error)
     }
@@ -49,6 +51,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
     try {
       await removeFromCollection(poemData.id, token)
       dispatch(updatePoem({id: poemData.id, updates: { is_saved: false }}))
+      dispatch(removePoemFromCollection(poemData.id))
     } catch (error: any) {
       const message = error?.response?.data?.message || "Error removing poem from collection."
       alert(message)

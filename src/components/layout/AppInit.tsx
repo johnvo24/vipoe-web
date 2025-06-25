@@ -1,6 +1,6 @@
 "use client"
 
-import { useAppDispatch } from "@/lib/hooks/reduxHooks"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/reduxHooks"
 import { setToken } from "@/lib/store/auth/authSlice"
 import { fetchUser } from "@/lib/store/auth/authThunks"
 import { useEffect } from "react"

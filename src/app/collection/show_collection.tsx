@@ -3,43 +3,51 @@
 import React, { useEffect, useCallback } from 'react'
 import PostCard from '@/components/post/PostCard'
 import { useAppSelector, useAppDispatch } from '@/lib/hooks/reduxHooks'
-import { fetchPoemFeed } from '@/lib/store/poem/poemFeedThunks'
-import { selectPoems, selectPoemFeedLoading, selectPoemFeedError, selectIsInitialLoading, selectHasMore, selectOffset, resetFeed } from '@/lib/store/poem/poemFeedSlice'
+import { fetchCollection } from '@/lib/store/collection/collectionThunks'
+import { 
+  selectCollectionPoems, 
+  selectCollectionLoading, 
+  selectCollectionError, 
+  selectCollectionIsInitialLoading, 
+  selectCollectionHasMore, 
+  selectCollectionOffset, 
+  resetCollection 
+} from '@/lib/store/collection/collectionSlice'
 import { useRouter } from 'next/navigation'
 import { selectAuthLoading, selectToken } from '@/lib/store/auth/authSlice'
 
-const ShowPoem = () => {
+const ShowCollection = () => {
   const dispatch = useAppDispatch()
   const token = useAppSelector(selectToken)
-  const poems = useAppSelector(selectPoems)
-  const poemFeedLoading = useAppSelector(selectPoemFeedLoading)
+  const poems = useAppSelector(selectCollectionPoems)
+  const collectionLoading = useAppSelector(selectCollectionLoading)
   const authLoading = useAppSelector(selectAuthLoading)
-  const error = useAppSelector(selectPoemFeedError)
-  const isInitialLoading = useAppSelector(selectIsInitialLoading)
-  const hasMore = useAppSelector(selectHasMore)
-  const offset = useAppSelector(selectOffset)
+  const error = useAppSelector(selectCollectionError)
+  const isInitialLoading = useAppSelector(selectCollectionIsInitialLoading)
+  const hasMore = useAppSelector(selectCollectionHasMore)
+  const offset = useAppSelector(selectCollectionOffset)
   const router = useRouter()
 
   useEffect(() => {
     if (isInitialLoading && !authLoading) {
-      dispatch(fetchPoemFeed({ offset: 0, limit: 10, reset: true }))
+      dispatch(fetchCollection({ offset: 0, limit: 10, reset: true }))
     }
   }, [dispatch, isInitialLoading, token, authLoading])
 
   useEffect(() => {
-    if (error === 'LOGGED_OUT') {
-      dispatch(resetFeed())
+    if (error === 'LOGGED_OUT' || error === 'NOT_AUTH') {
+      router.push('/sign-in')
     }
-    if (error && error !== 'LOGGED_OUT') {
-      console.error('Fetch Poem Error:', error)
+    if (error && error !== 'LOGGED_OUT' && error !== 'NOT_AUTH') {
+      console.error('Fetch Collection Error:', error)
     }
   }, [error, router])
 
   const loadMorePoems = useCallback(() => {
-    if (!isInitialLoading && !poemFeedLoading && hasMore) {
-      dispatch(fetchPoemFeed({ offset: Number(offset), limit: 10, reset: false }))
+    if (!isInitialLoading && !collectionLoading && hasMore) {
+      dispatch(fetchCollection({ offset: Number(offset), limit: 10, reset: false }))
     }
-  }, [dispatch, poemFeedLoading, hasMore, offset])
+  }, [dispatch, collectionLoading, hasMore, offset, isInitialLoading])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,7 +60,7 @@ const ShowPoem = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [loadMorePoems])
 
-  if (poemFeedLoading && poems.length === 0) {
+  if (collectionLoading && poems.length === 0) {
     return (
       <header className="flex justify-center p-4 shadow-md">
         <span>Loading...</span>
@@ -74,7 +82,7 @@ const ShowPoem = () => {
         ))
       )}
       
-      {poemFeedLoading && poems.length > 0 && (
+      {collectionLoading && poems.length > 0 && (
         <div className="flex justify-center p-4">
           <span>Loading more poems...</span>
         </div>
@@ -89,4 +97,4 @@ const ShowPoem = () => {
   )
 }
 
-export default ShowPoem
+export default ShowCollection
