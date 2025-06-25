@@ -14,13 +14,15 @@ import { signIn } from '@/lib/api/auth'
 import { useAppDispatch } from '@/lib/hooks/reduxHooks'
 import { fetchUser } from '@/lib/store/auth/authThunks'
 import { setToken } from '@/lib/store/auth/authSlice'
+import { resetFeed } from '@/lib/store/poem/poemFeedSlice'
+import { resetCollection } from '@/lib/store/collection/collectionSlice'
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  username: z.string().min(6, {
+    message: "Username must be at least 6 characters.",
   }).max(16),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
   }).max(100),
 })
 
@@ -46,6 +48,8 @@ const SignInForm = () => {
       localStorage.setItem("token", data.access_token)
       await dispatch(fetchUser(data.access_token))
       dispatch(setToken(data.access_token))
+      dispatch(resetFeed())
+      dispatch(resetCollection())
       router.push('/')
     } catch (error) {
       alert("Username or Password wrong")

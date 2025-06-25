@@ -5,6 +5,7 @@ import { User } from "@/types/auth"
 import { AppThunk } from "@/lib/store"
 import { resetAuth } from "./authSlice"
 import { resetFeed } from "../poem/poemFeedSlice"
+import { resetCollection } from "../collection/collectionSlice"
 
 export const fetchUser = createAsyncThunk<
   User,
@@ -33,5 +34,6 @@ export const logout = (): AppThunk => {
     localStorage.removeItem("token")
     dispatch(resetAuth())
     dispatch(resetFeed())
+    dispatch(resetCollection())
   }
 }
