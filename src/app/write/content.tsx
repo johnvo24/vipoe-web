@@ -50,9 +50,9 @@ const Content = () => {
   const poemData = {
     user_name: user?.username || "Anonymous",
     genre_id: 1,
-    prompt: "Thơ lục bát về tình yêu",
+    prompt: prompt || "Thơ lục bát về tình yêu",
     title: "Nhặt Tình Lục Bát",
-    content: "Thương ai ngày tháng đợi chờ?\nCho ta say nhớ vần thơ nghĩa tình\nTừ ấy Lục Bát lung linh\nĐể Ta nhặt lấy cho mình chơi vơi!\nLục tình Bát nghĩa ai rơi?\nRồi gieo nhung nhớ cho đời thắm tươi\nTình yêu muôn sắc rạng ngời\nThơ tình Lục bát luôn cười đón em.\nLục bát…rơi chi… lệ mềm!\nCho mi em vướng… ái êm giọt tình\nNgày đêm nỗi nhớ riêng mình\nVần thơ Lục bát thắm in vào hồn.",
+    content: poem || "Thương ai ngày tháng đợi chờ?\nCho ta say nhớ vần thơ nghĩa tình\nTừ ấy Lục Bát lung linh\nĐể Ta nhặt lấy cho mình chơi vơi!\nLục tình Bát nghĩa ai rơi?\nRồi gieo nhung nhớ cho đời thắm tươi\nTình yêu muôn sắc rạng ngời\nThơ tình Lục bát luôn cười đón em.\nLục bát…rơi chi… lệ mềm!\nCho mi em vướng… ái êm giọt tình\nNgày đêm nỗi nhớ riêng mình\nVần thơ Lục bát thắm in vào hồn.",
     note: "hihi",
     tags: "#lục bát #tình yêu #thơ",
     is_public: false,
@@ -94,78 +94,79 @@ const Content = () => {
   }
 
   return (
-    <div className="main pt-12 w-full">
-      <div className='flex justify-between w-8/12 min-w-[960px] mx-auto mt-4'>
-        <div className='w-[60%] bg-white p-4 rounded-lg shadow-sm'>
-          <p className='text-2xl text-black mb-2 font-semibold'>
-            <Pencil className='inline mr-2' />
-            Create new poem
-          </p>
-          <p className='text-md text-gray-700'>Enter your prompt:</p>
-          <Textarea placeholder='VD: Make a luc bat poem,...' onChange={(e) => setPrompt(e.target.value)}/>
-          <p className='text-md mt-2 text-gray-700'>Model:</p>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                className="w-full justify-between text-gray-600"
-                size="lg"
-              >
-                {model
-                  ? frameworks.find((models) => models.model === model)?.label
-                  : "Select model..."}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
-                <CommandInput placeholder="Search model..." />
-                <CommandList>
-                  <CommandEmpty>No model found.</CommandEmpty>
-                  <CommandGroup>
-                    {frameworks.map((models) => (
-                      <CommandItem
-                        key={models.model}
-                        value={models.model}
-                        onSelect={(currentValue) => {
-                          setModel(currentValue === model ? "" : currentValue)
-                          setOpen(false)
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            model === models.model ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {models.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <Button className='mt-4' type='button' onClick={generatePoem}>
-            Generate Poem
-          </Button>
-        </div>
-        <div className='w-[40%] bg-white p-4 rounded-lg flex justify-center items-center ms-4 shadow-sm'>
-          <p>
-            <History className='inline mr-2' />
-            History
-          </p>
+    <div className="flex flex-col items-center min-h-screen bg-[#f7f7f7] pt-16">
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+          <Pencil className="inline mr-2" /> Viết thơ mới
+        </h1>
+        <p className="text-gray-600 mb-4">Thả cảm xúc, chọn mô hình AI và sáng tác thơ!</p>
+        <div className="flex flex-col gap-4">
+          <Textarea
+            placeholder="Nhập chủ đề, cảm xúc hoặc ý tưởng cho bài thơ..."
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            className="resize-none min-h-[80px]"
+          />
+          <div className="flex items-center gap-2">
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="justify-between text-gray-600 min-w-[180px]"
+                  size="lg"
+                >
+                  {model
+                    ? frameworks.find((m) => m.model === model)?.label
+                    : "Chọn mô hình AI"}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Tìm mô hình..." />
+                  <CommandList>
+                    <CommandEmpty>Không tìm thấy.</CommandEmpty>
+                    <CommandGroup>
+                      {frameworks.map((m) => (
+                        <CommandItem
+                          key={m.model}
+                          value={m.model}
+                          onSelect={(currentValue) => {
+                            setModel(currentValue === model ? "" : currentValue)
+                            setOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              model === m.model ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {m.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            <Button
+              className="ml-auto"
+              type="button"
+              onClick={generatePoem}
+              disabled={!prompt || !model}
+            >
+              Sinh thơ
+            </Button>
+          </div>
         </div>
       </div>
-      <div className='content bg-white mx-auto flex flex-col items-center w-8/12 min-w-[960px] my-4 py-4 rounded-lg shadow-sm'>
-        <div className='w-3/4 items-center'>
-          <p className='w-full text-start text-xl text-black font-semibold'>Preview:</p>
-          <hr className="mt-1 mb-4 w-full border-dashed border-gray-500" />
-          <div className="preview bg-gradient-to-tr from-gray-700 via-gray-400 to-gray-300 p-12">
-            <PostCard className={''} poemData={poemData} />
-          </div>
+      <div className="w-full max-w-2xl mt-8">
+        <p className="text-xl font-semibold text-gray-800 mb-2">Xem trước bài thơ</p>
+        <div className="bg-gradient-to-tr from-gray-700 via-gray-400 to-gray-300 rounded-xl p-6 shadow">
+          <PostCard className="" poemData={poemData} />
         </div>
       </div>
     </div>

@@ -44,9 +44,10 @@ export async function getPoemFeed(offset: number, limit: number, token: string |
   return res.data
 }
 
-export async function getPoemInCollection(token: string): Promise<Poem[]> {
+export async function getPoemInCollection(offset: number, limit: number, token: string): Promise<Poem[]> {
   const res = await api.get(API_ROUTES.CRUD_COLLECTION, {
     headers: { Authorization: `Bearer ${token}` },
+    params: { offset, limit },
   })
   return res.data
 }

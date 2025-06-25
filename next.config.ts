@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
 
 module.exports = {
   // ...existing config...
+  // reactStrictMode: false,
   images: {
     remotePatterns: [
       {
