@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { updateProfile, updateAvatar } from '@/lib/api/auth'
+import { Camera, Edit, MapPin, Phone, Mail, Calendar, User } from 'lucide-react'
 
 const AccountInformation = (props: any) => {
   const [data, setData] = useState({
@@ -40,7 +41,7 @@ const AccountInformation = (props: any) => {
       const token = localStorage.getItem("token")
       if (token) {
         await updateProfile(token, data)
-        alert("Edited Successful")
+        alert("Update profile successfully!")
       }
     } catch (error) {
       console.error("Failed to update profile:", error)
@@ -64,207 +65,194 @@ const AccountInformation = (props: any) => {
         if (token) {
           const response = await updateAvatar(token, formData)
           if (response !== null) {
-            alert("Avatar updated successfully")
+            alert("Update avatar successfully!")
             setAvatar(null)
-          } else {
-            alert("Failed to update avatar")
           }
         }
       } catch (error) {
-        console.error("Error uploading avatar:", error)
+        console.error("Failed to update avatar:", error)
       }
-    } else {
-      console.log("No avatar selected")
     }
   }
 
-  const formatDate = (dateInput: string | Date): string => {
-    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
-    return [
-      date.getFullYear(),
-      String(date.getMonth() + 1).padStart(2, '0'),
-      String(date.getDate()).padStart(2, '0'),
-    ].join('-')
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "None"
+    const date = new Date(dateString)
+    return date.toISOString().split('T')[0]
   }
-  
+
   return (
-    <div className="flex flex-col items-center bg-white rounded-md overflow-hidden">
-      <div className="w-full h-36 bg-cover" style={{ backgroundImage: "url('/images/bg-stmpt.jpg')" }}></div>
-      <div className="-mt-16 w-32 h-32 rounded-full border-4 border-white overflow-hidden relative group">
-        <Image 
-          src={preview}
-          width={150}
-          height={150}
-          alt="Avatar"
-          className="object-cover w-full h-full"
-        />
-        <button
-          type="button"
-          className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-          title="Change Avatar"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <span className="text-white font-semibold">Upload Avatar</span>
-        </button>
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          ref={fileInputRef}
-          onChange={handleAvatarChange}
-        />
-      </div>
+    <div className="space-y-8">
+      {/* Avatar Section */}
+      <div className="flex flex-col items-center space-y-4">
+        <div className="relative group">
+          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200">
+            <Image
+              src={preview}
+              width={128}
+              height={128}
+              alt="Avatar"
+              className="object-cover w-full h-full"
+            />
+          </div>
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-full"
+            title="Change Avatar"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Camera className="w-6 h-6 text-white" />
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleAvatarChange}
+          />
+        </div>
 
-      {avatar && (
-        <Button type='button' onClick={handleAvatarUpload} size={'sm'} className='cursor-pointer mt-2'>Update Avatar</Button>
-      )}
+        {avatar && (
+          <Button 
+            type='button' 
+            onClick={handleAvatarUpload} 
+            size={'sm'} 
+            className='cursor-pointer'
+          >
+            Update Avatar
+          </Button>
+        )}
 
-      <div className="mt-2 text-center">
-        <h1 className="text-xl font-bold">{props.full_name}</h1>
-        <p className="text-gray-500">{ props.bio == null ? "None" : props.bio }</p>
-      </div>
-      <hr className="my-8 w-3/4 border-dashed border-gray-300" />
-
-      <div className="w-3/4 space-y-4 mb-6">
-        <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Fullname:</label>
-          <input
-            type="text"
-            value={ props.full_name == null ? "2023-01-01" : props.full_name }
-            readOnly
-            className="flex-1 bg-gray-100 p-2 rounded-md border border-gray-300 pointer-events-none select-none text-muted-foreground"
-          />
-        </div>
-        <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Email:</label>
-          <input
-            type="email"
-            value={ props.email == null ? "None" : props.email }
-            readOnly
-            className="flex-1 bg-gray-100 p-2 rounded-md border border-gray-300 pointer-events-none select-none text-muted-foreground"
-          />
-        </div>
-        <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Date of birth:</label>
-          <input
-            type="date"
-            value={ props.date_of_birth == null ? "None" : formatDate(props.date_of_birth) }
-            readOnly
-            className="flex-1 bg-gray-100 p-2 rounded-md border border-gray-300 pointer-events-none select-none text-muted-foreground"
-          />
-        </div>
-        <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Bio:</label>
-          <input
-            type="text"
-            value={ props.bio == null ? "None" : props.bio }
-            readOnly
-            className="flex-1 bg-gray-100 p-2 rounded-md border border-gray-300 pointer-events-none select-none text-muted-foreground"
-          />
-        </div>
-        <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Phone:</label>
-          <input
-            type="text"
-            value={ props.phone == null ? "None" : props.phone }
-            readOnly
-            className="flex-1 bg-gray-100 p-2 rounded-md border border-gray-300 pointer-events-none select-none text-muted-foreground"
-          />
-        </div>
-        <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Location:</label>
-          <input
-            type="text"
-            value={ props.location == null ? "None" : props.location }
-            readOnly
-            className="flex-1 bg-gray-100 p-2 rounded-md border border-gray-300 pointer-events-none select-none text-muted-foreground"
-          />
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-gray-800">{props.full_name}</h2>
+          <p className="text-gray-500">{props.bio || "No bio yet"}</p>
         </div>
       </div>
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="default">Edit Profile</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex w-5/6 items-center">
-              <Label htmlFor="fullname" className="w-1/3">
-                Fullname
-              </Label>
-              <Input 
-                id="full_name" 
-                name="full_name" 
-                value={data.full_name} 
-                type="text"
-                className="flex-1"
-                onChange={(e) => setData({ ...data, full_name: e.target.value })}
-              />
-            </div>
-            <div className="flex w-5/6 items-center">
-              <Label htmlFor="fullname" className="w-1/3">
-                Dob
-              </Label>
-              <Input 
-                id="date_of_birth" 
-                name="date_of_birth" 
-                value={data.date_of_birth} 
-                type="date" 
-                className="flex-1"
-                onChange={(e) => setData({ ...data, date_of_birth: e.target.value })}
-              />
-            </div>
-            <div className="flex w-5/6 items-center">
-              <Label htmlFor="fullname" className="w-1/3">
-                Bio
-              </Label>
-              <Input 
-                id="bio" 
-                name="bio" 
-                value={data.bio} 
-                type="text" 
-                className="flex-1"
-                onChange={(e) => setData({ ...data, bio: e.target.value })}
-              />
-            </div>
-            <div className="flex w-5/6 items-center">
-              <Label htmlFor="fullname" className="w-1/3">
-                Phone
-              </Label>
-              <Input 
-                id="phone" 
-                name="phone" 
-                value={data.phone} 
-                type="text" 
-                className="flex-1"
-                onChange={(e) => setData({ ...data, phone: e.target.value })}
-              />
-            </div>
-            <div className="flex w-5/6 items-center">
-              <Label htmlFor="fullname" className="w-1/3">
-                Location
-              </Label>
-              <Input 
-                id="location" 
-                name="location" 
-                value={data.location} 
-                type="text" 
-                className="flex-1"
-                onChange={(e) => setData({ ...data, location: e.target.value })}
-              />
+      {/* Information Cards */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-4">
+          <div className="flex items-center p-4 border rounded-lg bg-gray-50">
+            <User className="w-5 h-5 text-gray-400 mr-3" />
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-700">Full Name</label>
+              <p className="text-gray-900">{props.full_name || "Empty"}</p>
             </div>
           </div>
-          <DialogFooter>
-            <Button type="submit" className='cursor-pointer' onClick={handleSubmit}>Save changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+          <div className="flex items-center p-4 border rounded-lg bg-gray-50">
+            <Mail className="w-5 h-5 text-gray-400 mr-3" />
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-700">Email</label>
+              <p className="text-gray-900">{props.email || "Empty"}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center p-4 border rounded-lg bg-gray-50">
+            <Calendar className="w-5 h-5 text-gray-400 mr-3" />
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-700">Date of Birth</label>
+              <p className="text-gray-900">
+                {props.date_of_birth ? formatDate(props.date_of_birth) : "Empty"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center p-4 border rounded-lg bg-gray-50">
+            <Phone className="w-5 h-5 text-gray-400 mr-3" />
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-700">Phone Number</label>
+              <p className="text-gray-900">{props.phone || "Empty"}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center p-4 border rounded-lg bg-gray-50">
+            <MapPin className="w-5 h-5 text-gray-400 mr-3" />
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-700">Address</label>
+              <p className="text-gray-900">{props.location || "Empty"}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center p-4 border rounded-lg bg-gray-50">
+            <Edit className="w-5 h-5 text-gray-400 mr-3" />
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-700">Bio</label>
+              <p className="text-gray-900">{props.bio || "Empty"}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Button */}
+      <div className="flex justify-center pt-4">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="px-8 py-2">
+              <Edit className="w-4 h-4 mr-2" />
+              Chỉnh sửa thông tin
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Chỉnh sửa thông tin cá nhân</DialogTitle>
+              <DialogDescription>
+                Cập nhật thông tin cá nhân của bạn. Nhấn lưu khi hoàn thành.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="fullname">Họ và tên</Label>
+                <Input
+                  id="fullname"
+                  value={data.full_name}
+                  onChange={(e) => setData({ ...data, full_name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Mô tả bản thân</Label>
+                <Input
+                  id="bio"
+                  value={data.bio}
+                  onChange={(e) => setData({ ...data, bio: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Số điện thoại</Label>
+                <Input
+                  id="phone"
+                  value={data.phone}
+                  onChange={(e) => setData({ ...data, phone: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Địa chỉ</Label>
+                <Input
+                  id="location"
+                  value={data.location}
+                  onChange={(e) => setData({ ...data, location: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="date_of_birth">Ngày sinh</Label>
+                <Input
+                  id="date_of_birth"
+                  type="date"
+                  value={data.date_of_birth}
+                  onChange={(e) => setData({ ...data, date_of_birth: e.target.value })}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" onClick={handleSubmit}>
+                Lưu thay đổi
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   )
 }

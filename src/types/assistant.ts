@@ -1,3 +1,9 @@
+export interface ChatMessageRequest {
+  model: string
+  search_mode: boolean
+  prompt: string
+}
+
 export interface Step {
   error_poem: string
   step_content: string
@@ -14,12 +20,12 @@ export interface Chain {
 
 export type Message = {
   id: string
-  type: 'user' | 'ai' | 'poem' | 'edited-poem'
+  type: 'user' | 'ai'
   content: string
   metadata?: any
 }
 
-export type AssistantMode = 'write' | 'edit'
+export type AssistantMode = 'chat' | 'edit'
 
 export interface AIModel {
   model: string

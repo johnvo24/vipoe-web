@@ -4,11 +4,11 @@ import TabsProfile from '@/app/profile/tabs'
 
 const Profile = () => {
   return (
-    <div className="bg-transparent">
+    <div>
       <Header 
-        className="fixed top-0 left-0"
+        className="fixed top-0 left-0 min-w-[320px]"
       />
-      <div className='w-3/5 mt-16 mb-4 h-auto mx-auto p-2 bg-white rounded-md drop-shadow-md overflow-hidden'>
+      <div className="main pt-12 w-full mx-auto max-w-[640px] pb-6 h-screen">
         <TabsProfile />
       </div>
     </div>

@@ -19,7 +19,7 @@ const PoemCarousel: React.FC<PoemCarouselProps> = ({ poemData }) => {
   const slides = Array.from({ length: 3 }, (_, index) => index)
 
   return (
-    <div className="poem-box scrollbar-hidden overflow-hidden ps-14 pe-[22px]" ref={emblaRef}>
+    <div className="poem-box scrollbar-hidden overflow-hidden ps-14 pe-[22px] select-none" ref={emblaRef}>
       <div className="poem-content flex gap-2">
         {slides.map((slideIndex) => (
           <div

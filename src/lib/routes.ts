@@ -13,4 +13,7 @@ export const API_ROUTES = {
   GET_POEM_FEED: "/v1/poem/feed",
   // Collection
   CRUD_COLLECTION: "/v1/collection/",
+
+  // Assistant
+  ASSISTANT_CHAT: "/v1/assistant/chat",
 }

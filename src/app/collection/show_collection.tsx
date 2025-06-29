@@ -11,7 +11,6 @@ import {
   selectCollectionIsInitialLoading, 
   selectCollectionHasMore, 
   selectCollectionOffset, 
-  resetCollection 
 } from '@/lib/store/collection/collectionSlice'
 import { useRouter } from 'next/navigation'
 import { selectAuthLoading, selectToken } from '@/lib/store/auth/authSlice'

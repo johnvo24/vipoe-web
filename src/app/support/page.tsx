@@ -1,18 +1,18 @@
 import React from 'react'
 import Header from '@/components/layout/Header'
-import PoemAssistant from './PoemAssistant'
+import SupportContent from './content'
 
-const Assistant = () => {
+const Support = () => {
   return (
     <div>
       <Header 
         className="fixed top-0 left-0 min-w-[320px]"
       />
       <div className="main pt-14 w-full mx-auto max-w-[640px] pb-6 h-screen">
-        <PoemAssistant />
+        <SupportContent />
       </div>
     </div>
   )
 }
 
-export default Assistant
+export default Support
