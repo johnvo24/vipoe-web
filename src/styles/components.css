@@ -1,0 +1,94 @@
+@layer components {
+  /* Border */
+  .vi-border {
+    @apply border-[0.5] border-gray-200 dark:border-gray-700
+  }
+  .vi-border-b {
+    @apply border-b-[0.5] border-gray-200 dark:border-gray-700
+  }
+  .vi-border-fainter {
+    @apply border-[0.5] border-gray-100 dark:border-gray-800
+  }
+  /* text */
+  .text-15px {font-size: 15px;}
+  .vi-text {
+    @apply text-[15px] leading-[1.3] sm:text-base sm:leading-[1.5]
+  }
+  .vi-text-primary {
+    @apply text-black dark:text-white;
+  }
+  .vi-text-second {
+    @apply text-gray-500
+  }
+  .vi-text-third {
+    @apply text-gray-700
+  }
+  /* Shadow */
+  .vi-shadow {
+    box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.15), 0 0px 2px rgba(0, 0, 0, 0.05), 0 0px 1px rgba(0, 0, 0, 0.15);
+  }
+  .vi-shadow-b {
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  }
+  /* Button */
+  .vi-button {
+    @apply flex items-center justify-center rounded-full p-2 bg-transparent border-none cursor-pointer transition relative overflow-hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (hover: hover) {
+    .vi-button::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      background: oklch(0.21 0.034 264.665 / 0.08);
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .vi-button:hover::after,
+    .vi-button:focus-visible::after {
+      opacity: 1;
+    }
+    .vi-button:active::after {
+      background: oklch(0.21 0.034 264.665 / 0.16);
+      opacity: 1;
+    }
+  }
+  @media (hover: none) {
+    .vi-button::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      background: oklch(0.21 0.034 264.665 / 0.16);
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .vi-button:active::after {
+      opacity: 1;
+    }
+  }
+}
+
+/* Button disabled state */
+.vi-button:disabled {
+  @apply cursor-not-allowed opacity-50;
+  pointer-events: none;
+}
+
+.vi-button:disabled::after {
+  display: none;
+}
+
+/* Alternative disabled class for non-button elements */
+.vi-button.disabled {
+  @apply cursor-not-allowed opacity-50;
+  pointer-events: none;
+}
+
+.vi-button.disabled::after {
+  display: none;
+}
