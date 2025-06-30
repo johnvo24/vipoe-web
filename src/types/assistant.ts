@@ -22,7 +22,7 @@ export type Message = {
   id: string
   type: 'user' | 'ai'
   content: string
-  metadata?: any
+  metadata?: {model: string, prompt?: string}
 }
 
 export type AssistantMode = 'chat' | 'edit'

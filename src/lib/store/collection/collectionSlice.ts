@@ -24,7 +24,7 @@ const collectionSlice = createSlice({
       state.loading = false
       state.isInitialLoading = true
     },
-    removePoemFromCollection: (state, action: PayloadAction<string>) => {
+    removePoemFromCollection: (state, action: PayloadAction<number>) => {
       const poemId = action.payload
       state.poems = state.poems.filter(poem => Number(poem.id) !== Number(poemId))
       state.offset = Math.max(0, state.offset - 1)

@@ -51,6 +51,7 @@ const SignInForm = () => {
       dispatch(resetFeed())
       dispatch(resetCollection())
       router.push('/')
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       alert("Username or Password wrong")
     }
@@ -90,7 +91,7 @@ const SignInForm = () => {
         </form>
       </Form>
       <p className='mt-6 text-center'>
-        Don't have an account? 
+        Don&#39;t have an account? 
         <Link href='/sign-up' className='ms-2 font-semibold hover:underline'>Create account</Link>
       </p>
     </div>

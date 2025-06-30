@@ -13,7 +13,6 @@ interface AssistantInputProps {
   isSearchMode: boolean
   setIsSearchMode: (isSearchMode: boolean) => void
   loading: boolean
-  hasMessages: boolean
   onSend: () => void
 }
 
@@ -25,7 +24,6 @@ export default function AssistantInput({
   isSearchMode,
   setIsSearchMode,
   loading,
-  hasMessages,
   onSend,
 }: AssistantInputProps) {
 

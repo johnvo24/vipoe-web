@@ -22,6 +22,7 @@ const EmailVerify = () => {
         setTimeout(() => {
           router.push('/sign-in')
         }, 2000)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setStatus('error')
       }

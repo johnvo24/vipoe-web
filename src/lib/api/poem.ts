@@ -52,7 +52,7 @@ export async function getPoemInCollection(offset: number, limit: number, token: 
   return res.data
 }
 
-export async function saveToCollection(poem_id: number, token: string): Promise<Object> {
+export async function saveToCollection(poem_id: number, token: string): Promise<object> {
   const res = await api.post(`${API_ROUTES.CRUD_COLLECTION}${poem_id}`, null, {
     headers: { Authorization: `Bearer ${token}` },
   })

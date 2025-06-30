@@ -25,6 +25,7 @@ const PoemAssistant = () => {
   
   const dispatch = useAppDispatch()
   const router = useRouter()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useAppSelector(selectUser)
   const token = useAppSelector(selectToken)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
@@ -150,6 +151,7 @@ const PoemAssistant = () => {
     // }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleContinueEditing = async () => {
     if (!chain || isEditComplete) return
     setLoading(true)
@@ -245,7 +247,6 @@ const PoemAssistant = () => {
         isSearchMode={isSearchMode}
         setIsSearchMode={setIsSearchMode}
         loading={loading}
-        hasMessages={hasMessages}
         onSend={handleSendMessage}
       />
     </div>

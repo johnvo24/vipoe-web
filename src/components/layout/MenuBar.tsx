@@ -2,7 +2,7 @@
 
 import * as Menubar from "@radix-ui/react-menubar"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import { Home, Bot, BookMarked, Headset, Menu, ChevronDown, CircleChevronDown } from "lucide-react"
+import { Home, Bot, BookMarked, Headset, CircleChevronDown } from "lucide-react"
 import { useAppSelector } from "@/lib/hooks/reduxHooks";
 import { selectIsAuthenticated } from "@/lib/store/auth/authSlice";
 import { useRouter } from "next/navigation";
