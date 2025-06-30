@@ -16,7 +16,7 @@ export const fetchUser = createAsyncThunk<
   async (token, thunkAPI) => {
     try {
       if (!token) return thunkAPI.rejectWithValue("No access token")
-      const payload: any = jwtDecode(token)
+      const payload = jwtDecode<{ exp: number }>(token)
       if (payload.exp * 1000 < Date.now()) {
         return thunkAPI.rejectWithValue("Access token expired")
       }

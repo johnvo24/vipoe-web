@@ -20,13 +20,15 @@ export const getProfile = async (token: string): Promise<User> => {
   return res.data
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateProfile(token: string, data: any): Promise<void> {
   await api.put(API_ROUTES.UPDATE_PROFILE, data, {
     headers: { Authorization: `Bearer ${token}` },
   })
 }
 
-export async function updateAvatar(token: string, formData: any): Promise<Object> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function updateAvatar(token: string, formData: any): Promise<object> {
   const res = await api.put(API_ROUTES.UPDATE_AVATAR, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -35,6 +37,7 @@ export async function updateAvatar(token: string, formData: any): Promise<Object
   return res.data
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function signUp(data: any) {
   await api.post(API_ROUTES.SIGN_UP, data)
 }

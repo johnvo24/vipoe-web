@@ -1,33 +1,30 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
-import useAuth from "@/lib/hooks/useAuth"
-import AutoResizeTextarea from '@/components/autoresize-textarea'
-import { Focus, Bookmark, Heart, Forward, Download, BookmarkMinus, ImagePlus, SquarePen, Globe, Lock, GlobeLock, MoreVertical } from 'lucide-react'
-import { useRouter, usePathname } from "next/navigation"
+import React, { useRef } from 'react'
+import { Globe, GlobeLock, MoreVertical } from 'lucide-react'
 import UserAvatar from '@/components/ui/avatar'
 import { timeAgo } from '@/lib/utils'
 import Link from 'next/link'
-import useEmblaCarousel from 'embla-carousel-react'
 import InteractionBox from './InteractionBox'
-import { saveToCollection, createPoem, removeFromCollection } from '@/lib/api/poem'
+import { saveToCollection, removeFromCollection } from '@/lib/api/poem'
 import PoemCarousel from './PoemCarousel'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/reduxHooks'
 import { selectIsAuthenticated, selectToken } from '@/lib/store/auth/authSlice'
 import { updatePoem } from '@/lib/store/poem/poemFeedSlice'
 import { removePoemFromCollection, resetCollection } from '@/lib/store/collection/collectionSlice'
+import { Poem } from '@/types/poem'
+import { isAxiosError } from 'axios'
 
-const PostCard = ({ className, poemData }: { className: string, poemData: any }) => {
+const PostCard = ({ className, poemData }: { className: string, poemData: Poem }) => {
   const dispatch = useAppDispatch()
   const token = useAppSelector(selectToken)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
-  const [image, setImage] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string>(poemData.image_url || "/images/default-image.png")
-  const [editMode, setEditMode] = useState(false)
-  const [editedTitle, setEditedTitle] = useState(poemData.title)
-  const [editedContent, setEditedContent] = useState(poemData.content)
+  // const [image, setImage] = useState<File | null>(null)
+  // const [preview, setPreview] = useState<string>(poemData.image_url || "/images/default-image.png")
+  // const [editMode, setEditMode] = useState(false)
+  // const [editedTitle, setEditedTitle] = useState(poemData.title)
+  // const [editedContent, setEditedContent] = useState(poemData.content)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const router = useRouter()
 
   const handleSavePoem = async () => {
     if (!isAuthenticated || !token) {
@@ -35,7 +32,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
       return
     }
     try {
-      const response = await saveToCollection(poemData.id, token)
+      await saveToCollection(poemData.id, token)
       dispatch(updatePoem({id: poemData.id, updates: { is_saved: true }}))
       dispatch(resetCollection())
     } catch (error) {
@@ -52,44 +49,49 @@ const PostCard = ({ className, poemData }: { className: string, poemData: any })
       await removeFromCollection(poemData.id, token)
       dispatch(updatePoem({id: poemData.id, updates: { is_saved: false }}))
       dispatch(removePoemFromCollection(poemData.id))
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Error removing poem from collection."
+    } catch (error: unknown) {
+      let message = "Error removing poem from collection."
+
+      if (isAxiosError(error) && error.response?.data?.message) {
+        message = error.response.data.message
+      }
       alert(message)
     }
+
   }
 
   const handleCreatePoem = async () => {
-    const formData = new FormData()
-    formData.append("genre_id", "1")
-    formData.append("prompt", poemData.prompt)
-    formData.append("title", poemData.title)
-    formData.append("content", poemData.content)
-    formData.append("note", poemData.note || "")
-    formData.append("tags", poemData.tags || "")
-    formData.append("is_public", "false")
-    if (image instanceof File) {
-      formData.append("image", image)
-    }
-    try {
-      const token = localStorage.getItem("token")
-      if (!token) {
-        alert("You must be logged in to create a poem.")
-        return
-      }
-      const response = await createPoem(token, formData)
-      if (response !== null) {
-        alert("Poem created successfully")
-        router.push('/')
-      } else {
-        alert("Tạo poem thất bại!")
-      }
-    } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.message) {
-        alert(error.response.data.message)
-      } else {
-        alert("Đã có lỗi xảy ra khi tạo poem.")
-      }
-    }
+    // const formData = new FormData()
+    // formData.append("genre_id", "1")
+    // formData.append("prompt", poemData.prompt)
+    // formData.append("title", poemData.title)
+    // formData.append("content", poemData.content)
+    // formData.append("note", poemData.note || "")
+    // formData.append("tags", poemData.tags || "")
+    // formData.append("is_public", "false")
+    // if (image instanceof File) {
+    //   formData.append("image", image)
+    // }
+    // try {
+    //   const token = localStorage.getItem("token")
+    //   if (!token) {
+    //     alert("You must be logged in to create a poem.")
+    //     return
+    //   }
+    //   const response = await createPoem(token, formData)
+    //   if (response !== null) {
+    //     alert("Poem created successfully")
+    //     router.push('/')
+    //   } else {
+    //     alert("Tạo poem thất bại!")
+    //   }
+    // } catch (error: any) {
+    //   if (error.response && error.response.data && error.response.data.message) {
+    //     alert(error.response.data.message)
+    //   } else {
+    //     alert("Đã có lỗi xảy ra khi tạo poem.")
+    //   }
+    // }
   }
 
   return (

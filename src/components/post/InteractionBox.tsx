@@ -1,7 +1,7 @@
 'use client'
 
 import { formatNumber } from "@/lib/utils";
-import { Bookmark, Check, CheckLine, Heart, ImagePlus, MessageCircleMore, Send } from "lucide-react"
+import { Bookmark, Check, Heart, ImagePlus, MessageCircleMore, Send } from "lucide-react"
 
 interface Props {
   editMode: boolean;

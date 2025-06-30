@@ -24,7 +24,7 @@ const poemFeedSlice = createSlice({
       state.loading = false
       state.isInitialLoading = true
     },
-    updatePoem: (state, action: PayloadAction<{ id: string; updates: Partial<Poem> }>) => {
+    updatePoem: (state, action: PayloadAction<{ id: number; updates: Partial<Poem> }>) => {
       const { id, updates } = action.payload
       const poemIndex = state.poems.findIndex(poem => poem.id === Number(id))
       if (poemIndex !== -1) {

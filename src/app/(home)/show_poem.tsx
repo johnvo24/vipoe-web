@@ -33,13 +33,13 @@ const ShowPoem = () => {
     if (error && error !== 'LOGGED_OUT') {
       console.error('Fetch Poem Error:', error)
     }
-  }, [error, router])
+  }, [dispatch, error, router])
 
   const loadMorePoems = useCallback(() => {
     if (!isInitialLoading && !poemFeedLoading && hasMore) {
       dispatch(fetchPoemFeed({ offset: Number(offset), limit: 10, reset: false }))
     }
-  }, [dispatch, poemFeedLoading, hasMore, offset])
+  }, [dispatch, isInitialLoading, poemFeedLoading, hasMore, offset])
 
   useEffect(() => {
     const handleScroll = () => {

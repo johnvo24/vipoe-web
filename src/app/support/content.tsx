@@ -11,7 +11,7 @@ const SupportContent = () => {
         <h1 className="vi-text-primary text-3xl font-bold">Support Center</h1>
       </div>
       <p className="vi-text text-gray-700 mb-10 text-base">
-        Welcome to the Support Center. We're here to help you with any questions, issues, or feedback you may have about our platform.
+        Welcome to the Support Center. We&#39;re here to help you with any questions, issues, or feedback you may have about our platform.
       </p>
       <div className="space-y-8">
         <div className="flex items-start gap-4 bg-muted rounded-lg p-5 border">

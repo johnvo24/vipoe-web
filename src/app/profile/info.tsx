@@ -16,8 +16,9 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { updateProfile, updateAvatar } from '@/lib/api/auth'
 import { Camera, Edit, MapPin, Phone, Mail, Calendar, User } from 'lucide-react'
+import { AccountInformationProps } from '@/types/profile'
 
-const AccountInformation = (props: any) => {
+const AccountInformation = (props: AccountInformationProps) => {
   const [data, setData] = useState({
     full_name: props.full_name || '',
     bio: props.bio || '',

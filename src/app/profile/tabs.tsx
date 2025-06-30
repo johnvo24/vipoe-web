@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react'
 import AccountInformation from '@/app/profile/info'
-import useAuth from '@/lib/hooks/useAuth'
 import MyPoem from './my-poem'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getProfile } from '@/lib/api/auth'
 import { User, BookOpen, Heart, Settings, LoaderIcon } from 'lucide-react'
+import Image from 'next/image'
+import { useAppSelector } from '@/lib/hooks/reduxHooks'
+import { selectAuthLoading, selectUser } from '@/lib/store/auth/authSlice'
 
 interface User {
   full_name: string
@@ -20,7 +22,8 @@ interface User {
 }
 
 const TabsProfile = () => {
-  const { user, loading } = useAuth()
+  const user = useAppSelector(selectUser)
+  const loading = useAppSelector(selectAuthLoading)
   const [userData, setUserData] = useState<User | null>(null)
 
   useEffect(() => {
@@ -58,9 +61,11 @@ const TabsProfile = () => {
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-6 text-white">
         <div className="flex items-center space-x-4">
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white/20">
-            <img
+            <Image
               src={userData?.avt_url || "/images/st-mtp.jpg"}
               alt="Profile"
+              width={200} // hoặc kích thước phù hợp
+              height={200}
               className="w-full h-full object-cover"
             />
           </div>

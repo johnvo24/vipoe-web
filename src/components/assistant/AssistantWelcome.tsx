@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Wand2, PenTool, Sparkles } from "lucide-react"
+import { Sparkles } from "lucide-react"
 import { AssistantMode } from '@/types/assistant'
 
 interface AssistantWelcomeProps {
@@ -32,7 +32,7 @@ export default function AssistantWelcome({ mode, onSuggestionClick }: AssistantW
           AI Assistant
         </h1>
         <p className="vi-text-second mb-6">
-          I'll help you write or edit your poem!
+          I&#39;ll help you write or edit your poem!
         </p>
         <div className="mb-4">
           <div className="space-y-2">
