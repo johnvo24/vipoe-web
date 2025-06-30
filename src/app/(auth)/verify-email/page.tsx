@@ -1,10 +1,8 @@
 import React from 'react'
 import EmailVerify from './email-verify'
 
-const VerifyEmail = () => {
-  return (
-    <div><EmailVerify/></div>
-  )
+const VerifyEmailPage: React.FC = () => {
+  return <EmailVerify />
 }
 
-export default VerifyEmail
+export default VerifyEmailPage

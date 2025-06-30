@@ -28,7 +28,7 @@ const PoemCarousel: React.FC<PoemCarouselProps> = ({ poemData }) => {
             className="relative w-[264px] h-[176px] sm:w-[480px] sm:h-[320px] rounded-lg overflow-hidden flex-shrink-0 vi-border"
           >
             <Image
-              src={poemData.image_url && console.log(poemData.image_url) || "/images/bg-stmpt.jpg"}
+              src={poemData.image_url || "/images/bg-stmpt.jpg"}
               alt={`${poemData.title} - Slide ${slideIndex + 1}`}
               fill
               loading="lazy"
