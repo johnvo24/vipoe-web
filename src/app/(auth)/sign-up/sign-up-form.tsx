@@ -16,14 +16,19 @@ import { AxiosError } from 'axios'
 import { signUp } from '@/lib/api/auth'
 
 const formSchema = z.object({
-  full_name: z.string().max(100),
-  username: z.string().min(2, {
-    message: "Username must be at least 8 characters.",
-  }).max(16),
-  email: z.string().email(),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }).max(100),
+  full_name: z.string().min(1, "Full name is required").max(48),
+  username: z.string().min(6, {
+    message: "Username must be at least 6 characters.",
+  }).max(16).regex(/^[a-zA-Z0-9_]+$/, {
+    message: "Username can only contain letters, numbers, and underscores.",
+  }),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .max(100, "Password must not exceed 100 characters")
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, {
+      message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+    }),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -48,13 +53,13 @@ const SignUpForm = () => {
     try {
       await signUp(data)
       setUserCache({
-        full_name: data.full_name,
-        email: data.email,
+        full_name: data.full_name.trim(),
+        email: data.email.trim(),
       })
       setEmailVerification(true)
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log(error.response?.data?.detail || "Registration failed")
+        console.error(error.response?.data.detail.msg || "Registration failed")
       }
     }
   }
