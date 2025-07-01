@@ -30,7 +30,7 @@ export async function updatePoem(token: string, poemId: number, poemData: FormDa
 }
 
 export async function deletePoem(token: string, poemId: number): Promise<void> {
-  await api.delete(`${API_ROUTES.CRUD_POEM}${poemId}/`, {
+  await api.delete(`${API_ROUTES.CRUD_POEM}${poemId}`, {
     headers: { Authorization: `Bearer ${token}` },
   })
 }
@@ -60,7 +60,7 @@ export async function saveToCollection(poem_id: number, token: string): Promise<
 }
 
 export async function removeFromCollection(poemId: number, token: string): Promise<void> {
-  await api.delete(`${API_ROUTES.CRUD_COLLECTION}${poemId}/`, {
+  await api.delete(`${API_ROUTES.CRUD_COLLECTION}${poemId}`, {
     headers: { Authorization: `Bearer ${token}` },
   })
 }
