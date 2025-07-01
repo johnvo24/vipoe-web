@@ -20,7 +20,7 @@ export async function createPoem(token: string, poemData: FormData): Promise<Poe
 }
 
 export async function updatePoem(token: string, poemId: number, poemData: FormData): Promise<Poem> {
-  const res = await api.put(`${API_ROUTES.CRUD_POEM}${poemId}/`, poemData, {
+  const res = await api.put(`${API_ROUTES.CRUD_POEM}${poemId}`, poemData, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
