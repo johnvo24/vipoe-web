@@ -131,7 +131,7 @@ const SearchForm = () => {
               <div className="flex flex-wrap gap-4 mt-2">
                 {previewKeyword && (
                   <span className="bg-blue-100 px-2 py-1 rounded text-blue-700">
-                    <strong>Keyword:</strong> "{previewKeyword}"
+                    <strong>Keyword:</strong> &#34;{previewKeyword}&#34;
                   </span>
                 )}
                 {previewTags && (

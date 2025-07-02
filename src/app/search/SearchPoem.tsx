@@ -98,8 +98,8 @@ const SearchPoem = () => {
           <div>
             <p className="font-medium text-gray-700 mb-1">Search Tips:</p>
             <ul className="space-y-1">
-              <li>• Use # for tags: <code className="bg-gray-200 px-1 rounded">"#tình_yêu #quê_hương"</code></li>
-              <li>• Combine keywords and tags: <code className="bg-gray-200 px-1 rounded">"Vầng trăng #tình_yêu #nỗi_nhớ"</code></li>
+              <li>• Use # for tags: <code className="bg-gray-200 px-1 rounded">&#34;_yêu #quê_hương&#34;</code></li>
+              <li>• Combine keywords and tags: <code className="bg-gray-200 px-1 rounded">&#34;Vầng trăng #tình_yêu #nỗi_nhớ&#34;</code></li>
               <li>• Use the filter button to access genre selection</li>
             </ul>
           </div>
@@ -115,7 +115,7 @@ const SearchPoem = () => {
           {/* Search summary */}
           <div className="mt-2 mb-4 p-4 bg-gray-50 rounded-lg">
             <h2 className="text-lg font-semibold mb-2">Search Results</h2>
-            {keyword && <p className="text-sm text-gray-600">• Keyword: "{keyword}"</p>}
+            {keyword && <p className="text-sm text-gray-600">• Keyword: &#34;{keyword}&#34;</p>}
             {tags && <p className="text-sm text-gray-600">• Tags: {tags}</p>}
             {genre_id && <p className="text-sm text-gray-600">• Genre: {getGenreName(genre_id)}</p>}
             <p className="text-sm text-gray-500 mt-1">Found {poems.length} poems</p>
