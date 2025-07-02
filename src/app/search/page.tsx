@@ -1,12 +1,8 @@
-import React, { Suspense } from 'react'
-import SearchPoem from './SearchPoem'
+import React from 'react'
 import Header from '@/components/layout/Header'
+import SearchPoem from './SearchPoem'
 
-function SearchContent() {
-  return <SearchPoem />
-}
-
-export default function Page() {
+const SearchPage = () => {
   return (
     <div>
       <Header 
@@ -15,16 +11,12 @@ export default function Page() {
       <div className="main pt-14 w-full mx-auto max-w-[640px] pb-6">
         <div className="content">
           <div className="main-content px-2">
-            <Suspense fallback={
-              <div className="flex justify-center p-4">
-                <span>Loading search...</span>
-              </div>
-            }>
-              <SearchContent />
-            </Suspense>
+            <SearchPoem />
           </div>
         </div>
       </div>
     </div>
   )
 }
+
+export default SearchPage

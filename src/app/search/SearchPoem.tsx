@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import PostCard from '@/components/post/PostCard'
 import SearchForm from '@/components/search/SearchForm'
@@ -10,7 +10,7 @@ import { selectToken } from '@/lib/store/auth/authSlice'
 import { Poem } from '@/types/poem'
 import { poemGenres } from '@/lib/constants/poem_constant'
 
-const SearchPoem = () => {
+const SearchPoemContent = () => {
   const searchParams = useSearchParams()
   const token = useAppSelector(selectToken)
   
@@ -19,6 +19,8 @@ const SearchPoem = () => {
   const [error, setError] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
   const [offset, setOffset] = useState(0)
+  const offsetRef = useRef(0)
+  const loadingRef = useRef(false)
 
   const keyword = searchParams.get('keyword') || undefined
   const tags = searchParams.get('tags') || undefined
@@ -33,19 +35,22 @@ const SearchPoem = () => {
   }
 
   const searchPoems_API = useCallback(async (resetList = false) => {
-    if (loading || !hasSearchParams) return
+    if (loadingRef.current || !hasSearchParams) return
+    loadingRef.current = true
     setLoading(true)
     setError(null)
     
     try {
-      const currentOffset = resetList ? 0 : offset
+      const currentOffset = resetList ? 0 : offsetRef.current
       const results = await searchPoems(keyword, tags, genre_id, currentOffset, 20, token)
       
       if (resetList) {
         setPoems(results)
+        offsetRef.current = results.length
         setOffset(results.length)
       } else {
         setPoems(prev => [...prev, ...results])
+        offsetRef.current = offsetRef.current + results.length
         setOffset(prev => prev + results.length)
       }
       
@@ -54,31 +59,34 @@ const SearchPoem = () => {
       console.error('Error searching poems:', err)
       setError('Failed to search poems. Please try again.')
     } finally {
+      loadingRef.current = false
       setLoading(false)
     }
-  }, [keyword, tags, genre_id, token, offset, loading, hasSearchParams])
+  }, [keyword, tags, genre_id, token, hasSearchParams])
 
   // Reset and search when search params change
   useEffect(() => {
     if (hasSearchParams) {
       setPoems([])
+      offsetRef.current = 0
       setOffset(0)
       setHasMore(true)
       searchPoems_API(true)
     } else {
       setPoems([])
+      offsetRef.current = 0
       setOffset(0)
       setHasMore(true)
     }
   }, [keyword, tags, genre_id, token, hasSearchParams, searchPoems_API])
 
-  // Load more poems on scroll
+  // Load more poems on scroll  
   useEffect(() => {
     const handleScroll = () => {
       if (
         window.innerHeight + document.documentElement.scrollTop 
         >= document.documentElement.offsetHeight - 1000
-        && hasMore && !loading && hasSearchParams
+        && hasMore && !loadingRef.current && hasSearchParams
       ) {
         searchPoems_API(false)
       }
@@ -86,7 +94,7 @@ const SearchPoem = () => {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [searchPoems_API, hasMore, loading, hasSearchParams])
+  }, [searchPoems_API, hasMore, hasSearchParams])
 
   return (
     <div>
@@ -169,6 +177,14 @@ const SearchPoem = () => {
         </>
       )}
     </div>
+  )
+}
+
+const SearchPoem = () => {
+  return (
+    <React.Suspense fallback={<div className="flex justify-center p-4"><span>Loading search...</span></div>}>
+      <SearchPoemContent />
+    </React.Suspense>
   )
 }
 

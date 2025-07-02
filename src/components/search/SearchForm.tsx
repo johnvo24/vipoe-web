@@ -1,11 +1,10 @@
 "use client"
-
 import React, { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Search, Filter } from 'lucide-react'
 import { poemGenres } from '@/lib/constants/poem_constant'
 
-const SearchForm = () => {
+const SearchFormContent = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -150,6 +149,14 @@ const SearchForm = () => {
         )}
       </form>
     </div>
+  )
+}
+
+const SearchForm = () => {
+  return (
+    <React.Suspense fallback={<div>Loading search...</div>}>
+      <SearchFormContent />
+    </React.Suspense>
   )
 }
 
