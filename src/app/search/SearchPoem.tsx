@@ -18,7 +18,6 @@ const SearchPoemContent = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
-  const [offset, setOffset] = useState(0)
   const offsetRef = useRef(0)
   const loadingRef = useRef(false)
 
@@ -47,11 +46,9 @@ const SearchPoemContent = () => {
       if (resetList) {
         setPoems(results)
         offsetRef.current = results.length
-        setOffset(results.length)
       } else {
         setPoems(prev => [...prev, ...results])
         offsetRef.current = offsetRef.current + results.length
-        setOffset(prev => prev + results.length)
       }
       
       setHasMore(results.length === 20)
@@ -69,13 +66,11 @@ const SearchPoemContent = () => {
     if (hasSearchParams) {
       setPoems([])
       offsetRef.current = 0
-      setOffset(0)
       setHasMore(true)
       searchPoems_API(true)
     } else {
       setPoems([])
       offsetRef.current = 0
-      setOffset(0)
       setHasMore(true)
     }
   }, [keyword, tags, genre_id, token, hasSearchParams, searchPoems_API])
