@@ -1,12 +1,13 @@
 "use client"
 
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
 import PostCard from '@/components/post/PostCard'
 import { useAppSelector, useAppDispatch } from '@/lib/hooks/reduxHooks'
 import { fetchPoemFeed } from '@/lib/store/poem/poemFeedThunks'
 import { selectPoems, selectPoemFeedLoading, selectPoemFeedError, selectIsInitialLoading, selectHasMore, selectOffset, resetFeed } from '@/lib/store/poem/poemFeedSlice'
 import { useRouter } from 'next/navigation'
 import { selectAuthLoading, selectToken } from '@/lib/store/auth/authSlice'
+import throttle from 'lodash.throttle'
 
 const ShowPoem = () => {
   const dispatch = useAppDispatch()
@@ -19,6 +20,7 @@ const ShowPoem = () => {
   const hasMore = useAppSelector(selectHasMore)
   const offset = useAppSelector(selectOffset)
   const router = useRouter()
+  const [showScrollToTop, setShowScrollToTop] = useState(false)
 
   useEffect(() => {
     if (isInitialLoading && !authLoading) {
@@ -41,16 +43,28 @@ const ShowPoem = () => {
     }
   }, [dispatch, isInitialLoading, poemFeedLoading, hasMore, offset])
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000) {
+    const handleScroll = throttle(() => {
+      // Load more poems
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
         loadMorePoems()
       }
-    }
+
+      // Show scroll-to-top button
+      const shouldShowButton = poems.length > 5 && window.pageYOffset > 800
+      setShowScrollToTop(shouldShowButton)
+    }, 100) 
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [loadMorePoems])
+  }, [loadMorePoems, poems.length])
 
   if (poemFeedLoading && poems.length === 0) {
     return (
@@ -85,6 +99,27 @@ const ShowPoem = () => {
           <span className="text-gray-500">No more poems to load</span>
         </div>
       )}
+
+      {/* Scroll to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={"fixed bottom-12 sm:bottom-6 sm:right-0 bg-gray-800/35 hover:bg-gray-700 text-white p-3 mx-0 sm:mx-6 rounded-full hover:scale-105 z-20 cursor-pointer" + (showScrollToTop ? "" : " hidden")}
+        aria-label="Scroll to top"
+      >
+        <svg 
+          className="w-6 h-6" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d="M5 10l7-7m0 0l7 7m-7-7v18" 
+          />
+        </svg>
+      </button>
     </>
   )
 }
