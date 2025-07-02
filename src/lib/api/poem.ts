@@ -64,3 +64,27 @@ export async function removeFromCollection(poemId: number, token: string): Promi
     headers: { Authorization: `Bearer ${token}` },
   })
 }
+
+export async function searchPoems(
+  keyword?: string,
+  tags?: string,
+  genre_id?: number,
+  offset: number = 0,
+  limit: number = 20,
+  token?: string | null
+): Promise<Poem[]> {
+  const headers = token ? { Authorization: `Bearer ${token}` } : undefined
+  const params = {
+    offset,
+    limit,
+    ...(keyword && { keyword }),
+    ...(tags && { tags }),
+    ...(genre_id && { genre_id })
+  }
+  
+  const res = await api.get(API_ROUTES.SEARCH_POEMS, {
+    params,
+    headers,
+  })
+  return res.data
+}

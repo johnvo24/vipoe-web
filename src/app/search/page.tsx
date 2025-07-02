@@ -1,9 +1,8 @@
 import React from 'react'
-import ShowPoem from './ShowPoem';
-import Header from '@/components/layout/Header';
-import SearchForm from '@/components/search/SearchForm';
+import Header from '@/components/layout/Header'
+import SearchPoem from './SearchPoem'
 
-export default function Home() {
+const SearchPage = () => {
   return (
     <div>
       <Header 
@@ -12,11 +11,12 @@ export default function Home() {
       <div className="main pt-14 w-full mx-auto max-w-[640px] pb-6">
         <div className="content">
           <div className="main-content px-2">
-            <SearchForm />
-            <ShowPoem />
+            <SearchPoem />
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
+
+export default SearchPage
