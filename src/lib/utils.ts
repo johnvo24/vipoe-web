@@ -47,3 +47,51 @@ export function formatNumber(num: number): string {
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
+
+function groupIntoPairs(lines: string[]): string[][] {
+  const result: string[][] = []
+  for (let i = 0; i < lines.length; i += 2) {
+    const pair = [lines[i]]
+    if (i + 1 < lines.length) {
+      pair.push(lines[i + 1])
+    }
+    result.push(pair)
+  }
+  return result
+}
+
+export function insertNewlineAfterWordIndex(text: string, wordIndex: number): string {
+  const words = text.split(/\s+/)
+
+  if (words.length <= wordIndex) return text
+
+  const before = words.slice(0, wordIndex).join(' ')
+  const after = words.slice(wordIndex).join(' ')
+
+  return `${before}\n${after}`
+}
+
+export function splitPoemAndCalcSlides(poemContent: string): {
+  lines: string[]
+  slidesLength: number
+  slides: number[]
+  result: string[][]
+} {
+  const rawLines: string[] = poemContent.match(/[^.?!]+[.?!]/g)?.map(line => line.trim()) || []
+  const lines: string[] = []
+  for (let i = 0; i < rawLines.length; i++) {
+    const pair = insertNewlineAfterWordIndex(rawLines[i], 6)
+    lines.push(pair.trim())
+  }
+
+  const slidesLength: number = Math.ceil(lines.length / 2)
+  const slides: number[] = Array.from({ length: slidesLength }, (_, index) => index)
+  const result = groupIntoPairs(lines)
+
+  return {
+    lines,
+    slidesLength,
+    slides,
+    result
+  }
+}
