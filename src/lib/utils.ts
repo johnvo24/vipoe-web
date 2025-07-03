@@ -48,19 +48,24 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-function groupIntoPairs(lines: string[]): string[][] {
-  const result: string[][] = []
-  for (let i = 0; i < lines.length; i += 2) {
-    const pair = [lines[i]]
-    if (i + 1 < lines.length) {
-      pair.push(lines[i + 1])
-    }
-    result.push(pair)
+function hasPunctuation(poemData: string): boolean {
+  const punctuationRegex = /[.,!?;:]/
+  return punctuationRegex.test(poemData)
+}
+
+function splitPoemWithoutPunctuation(poem: string): string[] {
+  const words = poem.trim().split(/\s+/)
+  const result: string[] = []
+
+  for (let i = 0; i < words.length; i += 14) {
+    const chunk = words.slice(i, i + 14).join(' ')
+    result.push(chunk)
   }
+
   return result
 }
 
-export function insertNewlineAfterWordIndex(text: string, wordIndex: number): string {
+function insertNewlineAfterWordIndex(text: string, wordIndex: number): string {
   const words = text.split(/\s+/)
 
   if (words.length <= wordIndex) return text
@@ -77,16 +82,23 @@ export function splitPoemAndCalcSlides(poemContent: string): {
   slides: number[]
   result: string[][]
 } {
-  const rawLines: string[] = poemContent.match(/[^.?!]+[.?!]/g)?.map(line => line.trim()) || []
-  const lines: string[] = []
-  for (let i = 0; i < rawLines.length; i++) {
-    const pair = insertNewlineAfterWordIndex(rawLines[i], 6)
-    lines.push(pair.trim())
+  let lines: string[] = []
+  if (hasPunctuation(poemContent)) {
+    lines = poemContent.match(/[^.?!]+[.?!]/g)?.map(line => line.trim()) || []
+  } else {
+    lines = splitPoemWithoutPunctuation(poemContent)
   }
 
   const slidesLength: number = Math.ceil(lines.length / 2)
   const slides: number[] = Array.from({ length: slidesLength }, (_, index) => index)
-  const result = groupIntoPairs(lines)
+
+  // thêm \n
+  const result: string[][] = []
+  for (let i = 0; i < lines.length; i += 2) {
+    const l1 = insertNewlineAfterWordIndex(lines[i], 6)
+    const l2 = lines[i + 1] ? insertNewlineAfterWordIndex(lines[i + 1], 6) : ''
+    result.push([l1, l2])
+  }
 
   return {
     lines,
