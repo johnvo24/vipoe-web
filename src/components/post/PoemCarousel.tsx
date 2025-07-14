@@ -4,6 +4,7 @@ import React from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { Poem } from '@/types/poem'
 import Image from 'next/image'
+import { splitPoemAndCalcSlides } from '@/lib/utils'
 
 interface PoemCarouselProps {
   poemData: Poem
@@ -17,7 +18,7 @@ const PoemCarousel: React.FC<PoemCarouselProps> = ({ poemData }) => {
   })
 
   // For now, showing multiple slides with same content
-  const slides = Array.from({ length: 3 }, (_, index) => index)
+  const slides = splitPoemAndCalcSlides(poemData.content).slides
 
   return (
     <div className="poem-box scrollbar-hidden overflow-hidden ps-14 pe-[22px] select-none" ref={emblaRef}>
@@ -39,7 +40,7 @@ const PoemCarousel: React.FC<PoemCarouselProps> = ({ poemData }) => {
                 {poemData.title}
               </h3>
               <p className="text-sm text-gray-700 text-center whitespace-pre-wrap overflow-hidden line-clamp-4">
-                {poemData.content}
+                {splitPoemAndCalcSlides(poemData.content).result[slideIndex].join("\n")}
               </p>
             </div>
           </div>

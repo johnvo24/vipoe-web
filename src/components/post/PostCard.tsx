@@ -116,7 +116,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
               }
             </div>
             <div className="post-description">
-              <p className="note text-15px leading-[1.3]">{ poemData.note } Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus repudiandae pariatur ullam? Veritatis itaque vel.</p>
+              <p className="note text-15px leading-[1.3]">{ poemData.note }</p>
               <div className="tags leading-[1]">
                 <Link className="text-sm font-semibold me-1" href={'#'} >#quê hương</Link>
                 <Link className="text-sm font-semibold me-1" href={'#'} >#tình yêu</Link>
