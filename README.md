@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VIPOE Frontend
 
-## Getting Started
+A frontend service for the Vietnamese Poetry Web Platform with AI Assistance – VIPOE, combining traditional Vietnamese poetry creation with modern AI assistance and web search capabilities.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌸 Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**VIPOE Frontend** allows users to interact with Vietnamese poetry through a rich user interface: write and edit poems, explore curated feeds, chat with an AI assistant, and organize personal collections — all with modern UX design and performance.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Features
 
-## Learn More
+### 🔐 Authentication & User Management
+- Register, login, and verify email
+- JWT-based authentication
+- Password reset and profile updates
 
-To learn more about Next.js, take a look at the following resources:
+### 📝 Poetry Management
+- Rich text poem editor
+- Genre/tag selection and draft support
+- Personal collections for saved works
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🏠 Discovery & Exploration
+- Home feed with recent poems
+- Search and filter by genre, tag, and author
+- Featured & trending poems
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🤖 AI Integration
+- Gemini AI Assistant for poetry guidance
+- Smart suggestions and content recommendations
 
-## Deploy on Vercel
+### 💎 User Experience
+- Fully responsive for mobile and desktop
+- Dark/light mode toggle
+- Real-time notifications and social interactions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ⚙️ Tech Stack
+
+| Feature              | Technology               |
+|----------------------|---------------------------|
+| Framework            | Next.js                   |
+| Styling              | Tailwind CSS              |
+| State Management     | Redux                     |
+| HTTP Client          | Axios                     |
+| AI Integration       | via backend               |
+| Image Handling       | Cloudinary                |
+| Code Quality         | ESLint, Prettier          |
+| Deployment           | Vercel                    |
