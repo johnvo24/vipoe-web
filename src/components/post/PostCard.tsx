@@ -118,7 +118,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
             <div className="post-description">
               <p className="note text-15px leading-[1.3]">{ poemData.note }</p>
               <div className="tags leading-[1]">
-                {poemData.tags && poemData.tags.map((tag, _) => (
+                {poemData.tags && poemData.tags.map(tag => (
                   <Link 
                     key={tag.id} 
                     className="text-sm font-semibold me-1" 
