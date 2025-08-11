@@ -1,6 +1,6 @@
 # VIPOE Frontend
 
-A modern and responsive frontend application for the **Vietnamese Poetry Platform – VIPOE**, built with **ReactJS** and **TypeScript**. This interface seamlessly connects to the VIPOE backend (FastAPI) to deliver a complete poetry experience — from creation to discovery, all enhanced with AI assistance.
+A frontend service for the Vietnamese Poetry Web Platform with AI Assistance – VIPOE, combining traditional Vietnamese poetry creation with modern AI assistance and web search capabilities.
 
 ---
 
