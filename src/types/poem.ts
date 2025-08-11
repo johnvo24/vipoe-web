@@ -1,3 +1,8 @@
+export interface Tag {
+  id: number
+  name: string
+}``
+
 export interface Poem {
   id: number
   genre_id: number
@@ -14,7 +19,7 @@ export interface Poem {
   full_name: string
   avt_url: string
   genre_name: string
-  tags: string[]
+  tags: Tag[]
   is_saved: boolean
 }
 
