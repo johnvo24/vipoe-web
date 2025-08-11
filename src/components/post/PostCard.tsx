@@ -118,9 +118,16 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
             <div className="post-description">
               <p className="note text-15px leading-[1.3]">{ poemData.note }</p>
               <div className="tags leading-[1]">
-                <Link className="text-sm font-semibold me-1" href={'#'} >#quê hương</Link>
-                <Link className="text-sm font-semibold me-1" href={'#'} >#tình yêu</Link>
-                <Link className="text-sm font-semibold me-1" href={'#'} >#học đường</Link>
+                {poemData.tags && poemData.tags.map(tag => (
+                  <Link 
+                    key={tag.id} 
+                    className="text-sm font-semibold me-1" 
+                    href={{
+                      pathname: '/search',
+                      query: { tags: '#' + tag.name }
+                    }} 
+                  >#{tag.name}</Link>
+                ))}
               </div>
             </div>
           </div>

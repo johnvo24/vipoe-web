@@ -17,8 +17,9 @@ const PoemCarousel: React.FC<PoemCarouselProps> = ({ poemData }) => {
     containScroll: 'trimSnaps',
   })
 
-  // For now, showing multiple slides with same content
+  // Showing multiple slides with same content
   const slides = splitPoemAndCalcSlides(poemData.content).slides
+  
 
   return (
     <div className="poem-box scrollbar-hidden overflow-hidden ps-14 pe-[22px] select-none" ref={emblaRef}>
@@ -41,6 +42,7 @@ const PoemCarousel: React.FC<PoemCarouselProps> = ({ poemData }) => {
               </h3>
               <p className="text-sm text-gray-700 text-center whitespace-pre-wrap overflow-hidden line-clamp-4">
                 {splitPoemAndCalcSlides(poemData.content).result[slideIndex].join("\n")}
+                {/* {poemData.content.replace(/\n/g, '<br>')} */}
               </p>
             </div>
           </div>

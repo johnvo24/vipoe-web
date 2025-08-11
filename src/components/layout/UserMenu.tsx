@@ -53,9 +53,9 @@ const UserMenu: React.FC = () => {
       <UserAvatar 
         id={'header-avatar'}
         className="w-9 h-9 cursor-pointer"
-        src={user?.avt_url || 'https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg'}
+        src={user?.avt_url}
         alt={"Johnny Dark"}
-        fallbackText={"JD"}
+            fallbackText={user?.username.charAt(0).toUpperCase() || "U"}
         onClick={toggleDropdown}
       />
       {isDropdownVisible && (
