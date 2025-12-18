@@ -48,61 +48,28 @@ export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-function hasPunctuation(poemData: string): boolean {
-  const punctuationRegex = /[.,!?;:]/
-  return punctuationRegex.test(poemData)
-}
-
-function splitPoemWithoutPunctuation(poem: string): string[] {
-  const words = poem.trim().split(/\s+/)
-  const result: string[] = []
-
-  for (let i = 0; i < words.length; i += 14) {
-    const chunk = words.slice(i, i + 14).join(' ')
-    result.push(chunk)
-  }
-
-  return result
-}
-
-function insertNewlineAfterWordIndex(text: string, wordIndex: number): string {
-  const words = text.split(/\s+/)
-
-  if (words.length <= wordIndex) return text
-
-  const before = words.slice(0, wordIndex).join(' ')
-  const after = words.slice(wordIndex).join(' ')
-
-  return `${before}\n${after}`
-}
-
 export function splitPoemAndCalcSlides(poemContent: string): {
-  lines: string[]
-  slidesLength: number
   slides: number[]
   result: string[][]
 } {
-  let lines: string[] = []
-  if (hasPunctuation(poemContent)) {
-    lines = poemContent.match(/[^.?!]+[.?!]/g)?.map(line => line.trim()) || []
-  } else {
-    lines = splitPoemWithoutPunctuation(poemContent)
-  }
+  // 1. Tách dòng theo ký tự \n
+  const lines: string[] = poemContent
+    .split(/\r?\\n/)
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+ 
+  // 2. Mỗi slide chứa 4 dòng
+  const SLIDE_SIZE = 4
+  const slidesLength: number = Math.ceil(lines.length / SLIDE_SIZE)
+  const slides: number[] = Array.from({ length: slidesLength }, (_, i) => i)
 
-  const slidesLength: number = Math.ceil(lines.length / 2)
-  const slides: number[] = Array.from({ length: slidesLength }, (_, index) => index)
-
-  // thêm \n
+  // 3. Gom 4 dòng thành 1 slide
   const result: string[][] = []
-  for (let i = 0; i < lines.length; i += 2) {
-    const l1 = insertNewlineAfterWordIndex(lines[i], 6)
-    const l2 = lines[i + 1] ? insertNewlineAfterWordIndex(lines[i + 1], 6) : ''
-    result.push([l1, l2])
+  for (let i = 0; i < lines.length; i += SLIDE_SIZE) {
+    result.push(lines.slice(i, i + SLIDE_SIZE))
   }
 
   return {
-    lines,
-    slidesLength,
     slides,
     result
   }
