@@ -7,24 +7,30 @@ interface Props {
   editMode: boolean;
   isLiked?: boolean;
   isSaved?: boolean;
+  likeCount?: number;
+  commentCount?: number;
   onLikePoem?: () => void;
-  OnUnlikePoem?: () => void;
+  onUnlikePoem?: () => void;
   onCreatePoem?: () => void;
   onAddImage?: () => void;
   onSavePoem?: () => void;
   onUnsavePoem?: () => void;
+  onCommentClick?: () => void;
 }
 
 const InteractionBox = ({
   editMode,
   isLiked,
   isSaved,
+  likeCount = 0,
+  commentCount = 0,
   onLikePoem,
-  OnUnlikePoem,
+  onUnlikePoem,
   onCreatePoem,
   onAddImage,
   onSavePoem,
   onUnsavePoem,
+  onCommentClick,
 }: Props) => {
 
 
@@ -46,19 +52,19 @@ const InteractionBox = ({
   return (
     <div className="interaction-box vi-text-third flex rounded-lg pt-0.5 ml-11 pb-1">
       { isLiked ? (
-        <button onClick={OnUnlikePoem} className="action-btn flex items-center vi-button px-3 gap-1">
+        <button onClick={onUnlikePoem} className="action-btn flex items-center vi-button px-3 gap-1">
           <Heart className="fill-current text-red-500" size={16} />
-          <span className="text-sm">{ formatNumber(1240) }</span>
+          <span className="text-sm">{ formatNumber(likeCount) }</span>
         </button>
       ) : (
         <button onClick={onLikePoem}className="action-btn flex items-center vi-button px-3 gap-1">
           <Heart className="" size={16} />
-          <span className="text-sm">{ formatNumber(1239) }</span>
+          <span className="text-sm">{ formatNumber(likeCount) }</span>
         </button>
       )}
-      <button className="action-btn flex items-center vi-button px-3 gap-1">
+      <button onClick={onCommentClick} className="action-btn flex items-center vi-button px-3 gap-1">
         <MessageCircleMore className="" size={16} />
-        <span className="text-sm me">{ formatNumber(240) }</span>
+        <span className="text-sm me">{ formatNumber(commentCount) }</span>
       </button>
       { isSaved ? (
         <button onClick={onUnsavePoem} className="action-btn flex vi-button px-3 gap-1">

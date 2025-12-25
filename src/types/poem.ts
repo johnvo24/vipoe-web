@@ -21,6 +21,9 @@ export interface Poem {
   genre_name: string
   tags: Tag[]
   is_saved: boolean
+  like_count: number
+  comment_count: number
+  is_liked: boolean
 }
 
 export interface PoemFeedState {

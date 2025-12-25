@@ -12,6 +12,8 @@ export const API_ROUTES = {
   CRUD_POEM: "/v1/poem/",
   GET_POEM_FEED: "/v1/poem/feed",
   SEARCH_POEMS: "/v1/poem/search",
+  LIKE_POEM: "/v1/poem/",
+  COMMENT_POEM: "/v1/poem/",
   // Collection
   CRUD_COLLECTION: "/v1/collection/",
 
