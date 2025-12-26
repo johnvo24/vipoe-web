@@ -15,6 +15,7 @@ import { updatePoem } from '@/lib/store/poem/poemFeedSlice'
 import { removePoemFromCollection, resetCollection } from '@/lib/store/collection/collectionSlice'
 import { Poem } from '@/types/poem'
 import { isAxiosError } from 'axios'
+import { useRouter } from 'next/navigation'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: Poem }) => {
   const dispatch = useAppDispatch()
@@ -22,6 +23,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const [showComments, setShowComments] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
   const handleSavePoem = async () => {
     if (!isAuthenticated || !token) {
@@ -59,7 +61,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
 
   const handleLikePoem = async () => {
     if (!isAuthenticated || !token) {
-      alert("You must be logged in to like a poem.")
+      router.push('/sign-in')
       return
     }
     try {
@@ -78,7 +80,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
 
   const handleUnlikePoem = async () => {
     if (!isAuthenticated || !token) {
-      alert("You must be logged in to unlike a poem.")
+      router.push('/sign-in')
       return
     }
     try {
