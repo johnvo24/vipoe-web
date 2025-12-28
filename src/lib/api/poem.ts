@@ -116,3 +116,16 @@ export async function addComment(poemId: number, content: string, token: string)
   })
   return res.data
 }
+
+export async function updateComment(commentId: number, poemId: number, content: string, token: string): Promise<Comment> {
+  const res = await api.put(`${API_ROUTES.COMMENT_POEM}${poemId}/comments/${commentId}`, { content }, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return res.data
+}
+
+export async function deleteComment(commentId: number, poemId: number, token: string): Promise<void> {
+  await api.delete(`${API_ROUTES.COMMENT_POEM}${poemId}/comments/${commentId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}

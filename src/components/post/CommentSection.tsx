@@ -1,15 +1,16 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Send } from 'lucide-react'
+import { Send, Edit, Trash2, Check, X } from 'lucide-react'
 import UserAvatar from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { timeAgo } from '@/lib/utils'
-import { getComments, addComment } from '@/lib/api/poem'
+import { getComments, addComment, updateComment, deleteComment } from '@/lib/api/poem'
 import { Comment } from '@/types/comment'
 import { useAppSelector } from '@/lib/hooks/reduxHooks'
-import { selectToken, selectIsAuthenticated, selectUser } from '@/lib/store/auth/authSlice'
+import { selectToken, selectIsAuthenticated, selectUser, selectUserId } from '@/lib/store/auth/authSlice'
 
 interface CommentSectionProps {
   poemId: number
@@ -21,8 +22,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ poemId, isOpen, onClose
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')
   const [loading, setLoading] = useState(false)
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null)
+  const [editingContent, setEditingContent] = useState('')
+  const [deleteCommentId, setDeleteCommentId] = useState<number | null>(null)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const token = useAppSelector(selectToken)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
+  const currentUserId = useAppSelector(selectUserId)
   const user = useAppSelector(selectUser)
 
   useEffect(() => {
@@ -53,6 +59,52 @@ const CommentSection: React.FC<CommentSectionProps> = ({ poemId, isOpen, onClose
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleEditComment = (comment: Comment) => {
+    setEditingCommentId(comment.id)
+    setEditingContent(comment.content)
+  }
+
+  const handleSaveEdit = async () => {
+    if (!token || !editingCommentId || !editingContent.trim()) return
+
+    try {
+      const updatedComment = await updateComment(editingCommentId, poemId, editingContent.trim(), token)
+      setComments(prev => prev.map(c => c.id === editingCommentId ? updatedComment : c))
+      setEditingCommentId(null)
+      setEditingContent('')
+    } catch (error) {
+      console.error('Error updating comment:', error)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null)
+    setEditingContent('')
+  }
+
+  const handleDeleteComment = (commentId: number) => {
+    setDeleteCommentId(commentId)
+    setShowDeleteDialog(true)
+  }
+
+  const confirmDeleteComment = async () => {
+    if (!token || !deleteCommentId) return
+
+    try {
+      await deleteComment(deleteCommentId, poemId, token)
+      setComments(prev => prev.filter(c => c.id !== deleteCommentId))
+      setShowDeleteDialog(false)
+      setDeleteCommentId(null)
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+    }
+  }
+
+  const cancelDeleteComment = () => {
+    setShowDeleteDialog(false)
+    setDeleteCommentId(null)
   }
 
   if (!isOpen) return null
@@ -97,8 +149,59 @@ const CommentSection: React.FC<CommentSectionProps> = ({ poemId, isOpen, onClose
                   <span className="text-xs text-gray-500">@{comment.user_name}</span>
                   <span className="text-xs text-gray-500">•</span>
                   <span className="text-xs text-gray-500">{timeAgo(comment.created_at)}</span>
+                  {currentUserId === comment.user_id && (
+                    <div className="ml-auto flex gap-1">
+                      {editingCommentId === comment.id ? (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={handleSaveEdit}
+                            className="h-6 w-6 p-0"
+                          >
+                            <Check size={14} className="text-green-600" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={handleCancelEdit}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X size={14} className="text-gray-600" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleEditComment(comment)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <Edit size={14} className="text-blue-600" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <Trash2 size={14} className="text-red-600" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <p className="text-sm">{comment.content}</p>
+                {editingCommentId === comment.id ? (
+                  <Textarea
+                    value={editingContent}
+                    onChange={(e) => setEditingContent(e.target.value)}
+                    className="min-h-[60px] resize-none"
+                  />
+                ) : (
+                  <p className="text-sm">{comment.content}</p>
+                )}
               </div>
             </div>
           </div>
@@ -107,6 +210,25 @@ const CommentSection: React.FC<CommentSectionProps> = ({ poemId, isOpen, onClose
           <p className="text-gray-500 text-center py-8">No comments yet. Be the first to comment!</p>
         )}
       </div>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Comment</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this comment? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelDeleteComment}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteComment}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
