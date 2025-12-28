@@ -194,7 +194,7 @@ const SignUpForm = () => {
         </p>
       </div>
       }
-      <Toaster position='bottom-right' richColors/>
+      <Toaster position='bottom-right' richColors />
     </div>
   )
 }
