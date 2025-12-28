@@ -70,7 +70,7 @@ const SignUpForm = () => {
       setEmailVerification(true)
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.error("Registration Failed")
+        toast.error(error.response?.data.message || "An error occurred during registration.")
       }
     } finally {
       setIsLoading(false)
