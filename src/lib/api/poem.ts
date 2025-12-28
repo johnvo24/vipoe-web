@@ -1,6 +1,7 @@
 import { API_ROUTES } from "../routes"
 import { api } from "../services"
 import { Poem } from "@/types/poem"
+import { Comment } from "@/types/comment"
 
 export async function getUserPoems(token: string): Promise<Poem[]> {
   const res = await api.get(API_ROUTES.CRUD_POEM, {
@@ -85,6 +86,33 @@ export async function searchPoems(
   const res = await api.get(API_ROUTES.SEARCH_POEMS, {
     params,
     headers,
+  })
+  return res.data
+}
+
+export async function likePoem(poemId: number, token: string): Promise<void> {
+  await api.post(`${API_ROUTES.LIKE_POEM}${poemId}/like`, null, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function unlikePoem(poemId: number, token: string): Promise<void> {
+  await api.delete(`${API_ROUTES.LIKE_POEM}${poemId}/like`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function getComments(poemId: number, token?: string): Promise<Comment[]> {
+  const headers = token ? { Authorization: `Bearer ${token}` } : undefined
+  const res = await api.get(`${API_ROUTES.COMMENT_POEM}${poemId}/comments`, {
+    headers,
+  })
+  return res.data
+}
+
+export async function addComment(poemId: number, content: string, token: string): Promise<Comment> {
+  const res = await api.post(`${API_ROUTES.COMMENT_POEM}${poemId}/comments`, { content }, {
+    headers: { Authorization: `Bearer ${token}` },
   })
   return res.data
 }

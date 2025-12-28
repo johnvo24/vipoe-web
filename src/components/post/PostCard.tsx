@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { Globe, GlobeLock, MoreVertical } from 'lucide-react'
 import UserAvatar from '@/components/ui/avatar'
 import { timeAgo } from '@/lib/utils'
 import Link from 'next/link'
 import InteractionBox from './InteractionBox'
-import { saveToCollection, removeFromCollection } from '@/lib/api/poem'
+import { likePoem, unlikePoem, saveToCollection, removeFromCollection } from '@/lib/api/poem'
+import CommentSection from './CommentSection'
 import PoemCarousel from './PoemCarousel'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/reduxHooks'
 import { selectIsAuthenticated, selectToken } from '@/lib/store/auth/authSlice'
@@ -14,17 +15,15 @@ import { updatePoem } from '@/lib/store/poem/poemFeedSlice'
 import { removePoemFromCollection, resetCollection } from '@/lib/store/collection/collectionSlice'
 import { Poem } from '@/types/poem'
 import { isAxiosError } from 'axios'
+import { useRouter } from 'next/navigation'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: Poem }) => {
   const dispatch = useAppDispatch()
   const token = useAppSelector(selectToken)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
-  // const [image, setImage] = useState<File | null>(null)
-  // const [preview, setPreview] = useState<string>(poemData.image_url || "/images/default-image.png")
-  // const [editMode, setEditMode] = useState(false)
-  // const [editedTitle, setEditedTitle] = useState(poemData.title)
-  // const [editedContent, setEditedContent] = useState(poemData.content)
+  const [showComments, setShowComments] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
   const handleSavePoem = async () => {
     if (!isAuthenticated || !token) {
@@ -58,6 +57,48 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
       alert(message)
     }
 
+  }
+
+  const handleLikePoem = async () => {
+    if (!isAuthenticated || !token) {
+      router.push('/sign-in')
+      return
+    }
+    try {
+      await likePoem(poemData.id, token)
+      dispatch(updatePoem({
+        id: poemData.id,
+        updates: {
+          is_liked: true,
+          like_count: (poemData.like_count || 0) + 1
+        }
+      }))
+    } catch (error) {
+      console.error("Error liking poem:", error)
+    }
+  }
+
+  const handleUnlikePoem = async () => {
+    if (!isAuthenticated || !token) {
+      router.push('/sign-in')
+      return
+    }
+    try {
+      await unlikePoem(poemData.id, token)
+      dispatch(updatePoem({
+        id: poemData.id,
+        updates: {
+          is_liked: false,
+          like_count: Math.max((poemData.like_count || 0) - 1, 0)
+        }
+      }))
+    } catch (error) {
+      console.error("Error unliking poem:", error)
+    }
+  }
+
+  const handleCommentClick = () => {
+    setShowComments(!showComments)
   }
 
   const handleCreatePoem = async () => {
@@ -207,14 +248,22 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
       </div> */}
       <InteractionBox 
         editMode={false}
-        isLiked={false}
+        isLiked={poemData.is_liked}
         isSaved={poemData.is_saved}
-        onLikePoem={() => {}}
-        OnUnlikePoem={() => {}}
+        likeCount={poemData.like_count}
+        commentCount={poemData.comment_count}
+        onLikePoem={handleLikePoem}
+        onUnlikePoem={handleUnlikePoem}
         onCreatePoem={handleCreatePoem}
         onAddImage={() => fileInputRef.current?.click()}
         onSavePoem={handleSavePoem}
         onUnsavePoem={handleUnsavePoem}
+        onCommentClick={handleCommentClick}
+      />
+      <CommentSection
+        poemId={poemData.id}
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
       />
     </div>
   )
