@@ -57,6 +57,7 @@ export const selectToken = (state: { auth: AuthState }) => state.auth.token
 export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated
 export const selectAuthLoading = (state: { auth: AuthState }) => state.auth.loading
 export const selectAuthError = (state: { auth: AuthState }) => state.auth.error
+export const selectUserId = (state: { auth: AuthState }) => state.auth.user?.id
 
 export const { resetAuth, setToken } = authSlice.actions
 export default authSlice.reducer
