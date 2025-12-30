@@ -26,6 +26,17 @@ export interface Poem {
   is_liked: boolean
 }
 
+export interface CreatePome {
+  genre_id: number
+  prompt: string
+  title: string
+  content: string
+  note: string
+  tags: string
+  is_public: boolean
+  image: string
+}
+
 export interface PoemFeedState {
   poems: Poem[]
   loading: boolean

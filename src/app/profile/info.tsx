@@ -5,7 +5,6 @@ import Image from 'next/image'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -15,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { updateProfile, updateAvatar } from '@/lib/api/auth'
-import { Camera, MapPin, Phone, Mail, Calendar, User } from 'lucide-react'
+import { Camera } from 'lucide-react'
 import { AccountInformationProps } from '@/types/profile'
 
 const AccountInformation = (props: AccountInformationProps) => {
@@ -88,7 +87,7 @@ const AccountInformation = (props: AccountInformationProps) => {
       <div className="flex justify-center pt-4">
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="px-8 py-2 w-full bg-white text-black border-1 hover:bg-gray-100 cursor-pointer">
+            <Button className="px-8 py-2 w-full bg-white font-semibold text-black border-1 hover:bg-gray-100 cursor-pointer">
               Edit Profile
             </Button>
           </DialogTrigger>

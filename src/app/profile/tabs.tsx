@@ -65,7 +65,7 @@ const TabsProfile = () => {
             <h1 className="text-3xl font-bold">{userData?.full_name || "Người dùng"}</h1>
             <p className="text-black">@{userData?.username || "username"}</p>
           </div>
-          <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white/20">
+          <div className="w-22 h-22 rounded-full overflow-hidden border-4 border-white/20">
             <Image
               src={userData?.avt_url || "/images/st-mtp.jpg"}
               alt="Profile"
@@ -125,7 +125,7 @@ const TabsProfile = () => {
           </TabsTrigger>
         </TabsList>
 
-        <div className="p-6">
+        <div className="px-5">
           <TabsContent value="poem" className="mt-0">
             <MyPoem />
           </TabsContent>
