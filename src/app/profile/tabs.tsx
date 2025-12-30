@@ -5,7 +5,7 @@ import AccountInformation from '@/app/profile/info'
 import MyPoem from './my-poem'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getProfile } from '@/lib/api/auth'
-import { User, BookOpen, Heart, Settings, LoaderIcon } from 'lucide-react'
+import { User, BookOpen, Heart, Settings, LoaderIcon, Instagram, Facebook } from 'lucide-react'
 import Image from 'next/image'
 import { useAppSelector } from '@/lib/hooks/reduxHooks'
 import { selectAuthLoading, selectUser } from '@/lib/store/auth/authSlice'
@@ -57,9 +57,14 @@ const TabsProfile = () => {
   }
 
   return (
-    <div className="w-full">
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-6 text-white">
-        <div className="flex items-center space-x-4">
+    <div className="w-full border-[0.5px] border-[#d5d5d5] rounded-3xl bg-[#ffffff] shadow-sm">
+      {/* Profile Header */}
+      <div className="p-5">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">{userData?.full_name || "Người dùng"}</h1>
+            <p className="text-black">@{userData?.username || "username"}</p>
+          </div>
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white/20">
             <Image
               src={userData?.avt_url || "/images/st-mtp.jpg"}
@@ -69,40 +74,50 @@ const TabsProfile = () => {
               className="w-full h-full object-cover"
             />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold">{userData?.full_name || "Người dùng"}</h1>
-            <p className="text-blue-100">@{userData?.username || "username"}</p>
-            <p className="text-blue-100 text-sm mt-1">{userData?.bio || "No bio yet"}</p>
+        </div>
+        <p className="text-black text-sm my-1">{userData?.bio || "No bio yet"}</p>
+        <div className="flex justify-between items-center">
+          <p className='text-[#999] hover:underline cursor-pointer'>0 followers</p>
+          <div className="flex space-x-4">
+            <div className='p-1.5 rounded-full hover:bg-[#F2F3F5] cursor-pointer transition-all duration-300'>
+              <Facebook />
+            </div>
+            <div className='p-1.5 rounded-full hover:bg-[#F2F3F5] cursor-pointer transition-all duration-300'>
+              <Instagram />
+            </div>
           </div>
         </div>
+        <AccountInformation
+          full_name={userData?.full_name}
+          username={userData?.username}
+          email={userData?.email}
+          avt_url={userData?.avt_url}
+          bio={userData?.bio}
+          phone={userData?.phone}
+          location={userData?.location}
+          date_of_birth={userData?.date_of_birth}
+        />
       </div>
 
       {/* Tabs Navigation */}
-      <Tabs defaultValue="account" className="w-full px-2">
-        <TabsList className="w-full h-auto p-1 bg-gray-100 border-b">
-          <TabsTrigger 
-            value="account" 
-            className="flex-1 flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm py-3"
-          >
-            <User className="w-4 h-4" />
-            <span className="inline">Profile</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="poem" 
+      <Tabs defaultValue="poem" className="w-full">
+        <TabsList className="w-full h-auto p-1 bg-gray-100">
+          <TabsTrigger
+            value="poem"
             className="flex-1 flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm py-3"
           >
             <BookOpen className="w-4 h-4" />
             <span className="inline">Poem</span>
           </TabsTrigger>
-          <TabsTrigger 
-            value="wishlist" 
+          <TabsTrigger
+            value="wishlist"
             className="flex-1 flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm py-3"
           >
             <Heart className="w-4 h-4" />
             <span className="inline">Liked</span>
           </TabsTrigger>
-          <TabsTrigger 
-            value="account_settings" 
+          <TabsTrigger
+            value="account_settings"
             className="flex-1 flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm py-3"
           >
             <Settings className="w-4 h-4" />
@@ -111,23 +126,10 @@ const TabsProfile = () => {
         </TabsList>
 
         <div className="p-6">
-          <TabsContent value="account" className="mt-0">
-            <AccountInformation
-              full_name={userData?.full_name}
-              username={userData?.username}
-              email={userData?.email}
-              avt_url={userData?.avt_url}
-              bio={userData?.bio}
-              phone={userData?.phone}
-              location={userData?.location}
-              date_of_birth={userData?.date_of_birth}
-            />
-          </TabsContent>
-          
           <TabsContent value="poem" className="mt-0">
             <MyPoem />
           </TabsContent>
-          
+
           <TabsContent value="wishlist" className="mt-0">
             <div className="text-center py-12">
               <Heart className="w-16 h-16 mx-auto text-gray-300 mb-4" />
@@ -135,7 +137,7 @@ const TabsProfile = () => {
               <p className="text-gray-500">Hãy khám phá và yêu thích những bài thơ hay nhất!</p>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="account_settings" className="mt-0">
             <div className="space-y-6">
               <div>
@@ -150,7 +152,7 @@ const TabsProfile = () => {
                       Đổi mật khẩu
                     </button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Xác thực email</h4>
@@ -160,7 +162,7 @@ const TabsProfile = () => {
                       Đã xác thực
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Xóa tài khoản</h4>
