@@ -5,27 +5,17 @@ import AccountInformation from '@/app/profile/info'
 import MyPoem from './my-poem'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getProfile } from '@/lib/api/auth'
-import { User, BookOpen, Heart, Settings, LoaderIcon, Instagram, Facebook } from 'lucide-react'
+import { User as UserType } from '@/types/auth'
+import { BookOpen, Heart, Settings, LoaderIcon, Instagram, Facebook } from 'lucide-react'
 import Image from 'next/image'
 import { useAppSelector } from '@/lib/hooks/reduxHooks'
 import { selectAuthLoading, selectUser } from '@/lib/store/auth/authSlice'
 
-interface User {
-  full_name: string
-  username: string
-  email: string
-  avt_url: string
-  bio: string
-  phone: string
-  location: string
-  date_of_birth: string
-}
-
 const TabsProfile = () => {
   const user = useAppSelector(selectUser)
   const loading = useAppSelector(selectAuthLoading)
-  const [userData, setUserData] = useState<User | null>(null)
-
+  const [userData, setUserData] = useState<UserType | null>(null)
+  console.log("Current user from Redux:", user)
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -33,6 +23,7 @@ const TabsProfile = () => {
         if (token) {
           const response = await getProfile(token)
           setUserData(response)
+          console.log("Fetched profile data:", response)
         } else {
           console.error("No token found in localStorage")
           setUserData(null)
@@ -77,7 +68,7 @@ const TabsProfile = () => {
         </div>
         <p className="text-black text-sm my-1">{userData?.bio || "No bio yet"}</p>
         <div className="flex justify-between items-center">
-          <p className='text-[#999] hover:underline cursor-pointer'>0 followers</p>
+          <p className='text-[#999] hover:underline cursor-pointer'>{userData?.followers_count || 0} followers</p>
           <div className="flex space-x-4">
             <div className='p-1.5 rounded-full hover:bg-[#F2F3F5] cursor-pointer transition-all duration-300'>
               <Facebook />
