@@ -24,6 +24,7 @@ export interface Poem {
   like_count: number
   comment_count: number
   is_liked: boolean
+  save_count: number
 }
 
 export interface CreatePome {

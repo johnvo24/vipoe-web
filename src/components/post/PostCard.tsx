@@ -27,12 +27,18 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
 
   const handleSavePoem = async () => {
     if (!isAuthenticated || !token) {
-      alert("Not logged in!")
+      router.push('/sign-in')
       return
     }
     try {
       await saveToCollection(poemData.id, token)
-      dispatch(updatePoem({id: poemData.id, updates: { is_saved: true }}))
+      dispatch(updatePoem({
+        id: poemData.id, 
+        updates: { 
+          is_saved: true,
+          save_count: (poemData.save_count || 0) + 1
+        }
+      }))
       dispatch(resetCollection())
     } catch (error) {
       console.error("Error saving to collection:", error)
@@ -46,7 +52,13 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
     }
     try {
       await removeFromCollection(poemData.id, token)
-      dispatch(updatePoem({id: poemData.id, updates: { is_saved: false }}))
+      dispatch(updatePoem({
+        id: poemData.id, 
+        updates: { 
+          is_saved: false,
+          save_count: Math.max((poemData.save_count || 0) - 1, 0)
+        }
+      }))
       dispatch(removePoemFromCollection(poemData.id))
     } catch (error: unknown) {
       let message = "Error removing poem from collection."
@@ -252,6 +264,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
         isSaved={poemData.is_saved}
         likeCount={poemData.like_count}
         commentCount={poemData.comment_count}
+        saveCount={poemData.save_count}
         onLikePoem={handleLikePoem}
         onUnlikePoem={handleUnlikePoem}
         onCreatePoem={handleCreatePoem}

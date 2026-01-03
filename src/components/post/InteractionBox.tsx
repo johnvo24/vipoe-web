@@ -9,6 +9,7 @@ interface Props {
   isSaved?: boolean;
   likeCount?: number;
   commentCount?: number;
+  saveCount?: number;
   onLikePoem?: () => void;
   onUnlikePoem?: () => void;
   onCreatePoem?: () => void;
@@ -24,6 +25,7 @@ const InteractionBox = ({
   isSaved,
   likeCount = 0,
   commentCount = 0,
+  saveCount = 0,
   onLikePoem,
   onUnlikePoem,
   onCreatePoem,
@@ -69,12 +71,12 @@ const InteractionBox = ({
       { isSaved ? (
         <button onClick={onUnsavePoem} className="action-btn flex vi-button px-3 gap-1">
           <Bookmark className="fill-current text-yellow-400" size={16} />
-          <span className="text-sm me">{ formatNumber(46) }</span>
+          <span className="text-sm me">{ formatNumber(saveCount) }</span>
         </button>
       ) : (
         <button onClick={onSavePoem} className="action-btn flex vi-button px-3 gap-1">
           <Bookmark className="" size={16} />
-          <span className="text-sm me">{ formatNumber(45) }</span>
+          <span className="text-sm me">{ formatNumber(saveCount) }</span>
         </button>
       )}
       <button className="action-btn flex vi-button px-3 gap-1">
