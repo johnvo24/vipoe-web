@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="mdl-js">
-      <body className="bg-white">
+      <body className="bg-[#fafafa]">
         <ReduxProvider>
           <AppInit />
           { children }

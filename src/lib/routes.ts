@@ -6,6 +6,7 @@ export const API_ROUTES = {
   VERIFY_EMAIL: "/v1/auth/verify-email",
   // Users
   GET_PROFILE: "/v1/user/profile",
+  GET_USER_BY_ID: "/v1/user/",
   UPDATE_PROFILE: "/v1/user/profile",
   UPDATE_AVATAR: "/v1/user/profile/avatar",
   // Poem

@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Globe, GlobeLock, MoreVertical } from 'lucide-react'
 import UserAvatar from '@/components/ui/avatar'
+import Image from 'next/image'
 import { timeAgo } from '@/lib/utils'
 import Link from 'next/link'
 import InteractionBox from './InteractionBox'
@@ -10,20 +11,47 @@ import { likePoem, unlikePoem, saveToCollection, removeFromCollection } from '@/
 import CommentSection from './CommentSection'
 import PoemCarousel from './PoemCarousel'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/reduxHooks'
-import { selectIsAuthenticated, selectToken } from '@/lib/store/auth/authSlice'
+import { selectIsAuthenticated, selectToken, selectUserId } from '@/lib/store/auth/authSlice'
 import { updatePoem } from '@/lib/store/poem/poemFeedSlice'
 import { removePoemFromCollection, resetCollection } from '@/lib/store/collection/collectionSlice'
 import { Poem } from '@/types/poem'
+import { User } from '@/types/auth'
 import { isAxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
+import { getUserById } from '@/lib/api/auth'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import { Button } from '@/components/ui/button'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: Poem }) => {
   const dispatch = useAppDispatch()
   const token = useAppSelector(selectToken)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const [showComments, setShowComments] = useState(false)
+  const [userInfo, setUserInfo] = useState<User | null>(null)
+  const [userLoading, setUserLoading] = useState(false)
+  const currentUserId = useAppSelector(selectUserId)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (!poemData.user_id) return
+      setUserLoading(true)
+      try {
+        const user = await getUserById(poemData.user_id, token || undefined)
+        setUserInfo(user)
+      } catch (error) {
+        // Handle error if needed
+      } finally {
+        setUserLoading(false)
+      }
+    }
+    fetchUserInfo()
+  }, [poemData.user_id, token])
 
   const handleSavePoem = async () => {
     if (!isAuthenticated || !token) {
@@ -33,8 +61,8 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
     try {
       await saveToCollection(poemData.id, token)
       dispatch(updatePoem({
-        id: poemData.id, 
-        updates: { 
+        id: poemData.id,
+        updates: {
           is_saved: true,
           save_count: (poemData.save_count || 0) + 1
         }
@@ -53,8 +81,8 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
     try {
       await removeFromCollection(poemData.id, token)
       dispatch(updatePoem({
-        id: poemData.id, 
-        updates: { 
+        id: poemData.id,
+        updates: {
           is_saved: false,
           save_count: Math.max((poemData.save_count || 0) - 1, 0)
         }
@@ -148,7 +176,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
   }
 
   return (
-    <div className={`${className} post-card bg-white rounded-2xl relative w-full overflow-hidden vi-shadow`}>
+    <div className={`${className} post-card bg-[#ffffff] rounded-2xl relative w-full overflow-hidden vi-shadow`}>
       <div className="post-header px-2 pt-2 flex justify-between mt-1 mb-2">
         <div className="info-box flex">
           <UserAvatar
@@ -160,25 +188,89 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
           />
           <div className="info-text flex-1">
             <div className="flex items-center">
-              <span className="username vi-text-primary text-15px font-semibold flex items-center">{poemData.user_name}</span>
+              <HoverCard openDelay={200} closeDelay={200}>
+                <HoverCardTrigger>
+                  <span className="username vi-text-primary text-15px font-semibold flex items-center cursor-pointer hover:underline">
+                    {poemData.user_name}
+                  </span>
+                </HoverCardTrigger>
+                {!isAuthenticated || !token ? null : (
+                  <HoverCardContent align='start' className='rounded-xl w-72'>
+                    {userLoading ? (
+                      <div className="flex justify-center items-center p-4">
+                        <p>Loading...</p>
+                      </div>
+                    ) : userInfo ? (
+                      <div className="flex justify-between">
+                        <div>
+                          <h1 className="text-xl font-bold">{userInfo.full_name || "Người dùng"}</h1>
+                          <p className="text-black">@{userInfo.username}</p>
+                        </div>
+                        <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white/20">
+                          <Image
+                            src={userInfo.avt_url || "/images/st-mtp.jpg"}
+                            alt="Profile"
+                            width={200}
+                            height={200}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between">
+                        <div>
+                          <h1 className="text-xl font-bold">{"Người dùng"}</h1>
+                          <p className="text-black">@{"username"}</p>
+                        </div>
+                        <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white/20">
+                          <Image
+                            src={"/images/st-mtp.jpg"}
+                            alt="Profile"
+                            width={200}
+                            height={200}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {userInfo && (
+                      <div className='space-y-1.5'>
+                        <p className='font-light'>{userInfo.bio || "No bio available"}</p>
+                        <p className='font-light text-[#999]'>{userInfo.followers_count || 0} followers · {userInfo.following_count || 0} following</p>
+                        {userInfo.id !== currentUserId && (
+                          userInfo.is_following ? (
+                            <Button className="mt-1.5 py-2 w-full border bg-white text-black rounded-lg hover:bg-gray-100 cursor-pointer">
+                              Unfollow
+                            </Button>
+                          ) : (
+                            <Button className="mt-1.5 py-2 w-full bg-black text-white rounded-lg cursor-pointer">
+                              Follow
+                            </Button>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </HoverCardContent>
+                )}
+              </HoverCard>
               <span className="mx-2 text-gray-400 text-sm">·</span>
               <span className="time vi-text-second text-sm">{timeAgo(poemData.created_at)}</span>
               {poemData.is_public
                 ? <Globe size={16} className="ml-2 vi-text-second" />
-                : <GlobeLock size={16} className="ml-2 vi-text-second"/>
+                : <GlobeLock size={16} className="ml-2 vi-text-second" />
               }
             </div>
             <div className="post-description">
-              <p className="note text-15px leading-[1.3]">{ poemData.note }</p>
+              <p className="note text-15px leading-[1.3]">{poemData.note}</p>
               <div className="tags leading-[1]">
                 {poemData.tags && poemData.tags.map(tag => (
-                  <Link 
-                    key={tag.id} 
-                    className="text-sm font-semibold me-1" 
+                  <Link
+                    key={tag.id}
+                    className="text-sm font-semibold me-1"
                     href={{
                       pathname: '/search',
                       query: { tags: '#' + tag.name }
-                    }} 
+                    }}
                   >#{tag.name}</Link>
                 ))}
               </div>
@@ -190,12 +282,12 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
         <button
           type="button"
           className="vi-button"
-          onClick={() => {/* mở menu hoặc xử lý mở rộng ở đây */}}
+          onClick={() => {/* mở menu hoặc xử lý mở rộng ở đây */ }}
         >
           <MoreVertical size={16} className="text-gray-600 group-hover:text-black transition-colors" />
         </button>
       </div>
-      
+
       <PoemCarousel poemData={poemData} />
 
       {/* <div className="relative group mx-6 py-6 text-center rounded-lg hover:bg-gray-100 transition-colors duration-200  border hidden"
@@ -258,7 +350,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
           onChange={handleAvatarChange}
         />
       </div> */}
-      <InteractionBox 
+      <InteractionBox
         editMode={false}
         isLiked={poemData.is_liked}
         isSaved={poemData.is_saved}

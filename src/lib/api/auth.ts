@@ -20,6 +20,14 @@ export const getProfile = async (token: string): Promise<User> => {
   return res.data
 }
 
+export const getUserById = async (userId: number, token?: string): Promise<User> => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : undefined
+  const res = await api.get(`${API_ROUTES.GET_USER_BY_ID}${userId}`, {
+    headers,
+  })
+  return res.data
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateProfile(token: string, data: any): Promise<void> {
   await api.put(API_ROUTES.UPDATE_PROFILE, data, {
