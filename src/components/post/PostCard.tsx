@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState, useEffect } from 'react'
-import { Globe, GlobeLock, MoreVertical } from 'lucide-react'
+import { Globe, GlobeLock, MoreVertical, Plus } from 'lucide-react'
 import UserAvatar from '@/components/ui/avatar'
 import Image from 'next/image'
 import { timeAgo } from '@/lib/utils'
@@ -10,6 +10,7 @@ import InteractionBox from './InteractionBox'
 import { likePoem, unlikePoem, saveToCollection, removeFromCollection } from '@/lib/api/poem'
 import CommentSection from './CommentSection'
 import PoemCarousel from './PoemCarousel'
+import { ProfilePreviewDialog } from '@/components/post/ProfilePreviewDialog'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/reduxHooks'
 import { selectIsAuthenticated, selectToken, selectUserId } from '@/lib/store/auth/authSlice'
 import { updatePoem } from '@/lib/store/poem/poemFeedSlice'
@@ -33,6 +34,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
   const [showComments, setShowComments] = useState(false)
   const [userInfo, setUserInfo] = useState<User | null>(null)
   const [userLoading, setUserLoading] = useState(false)
+  const [open, setOpen] = useState(false)
   const currentUserId = useAppSelector(selectUserId)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -179,13 +181,52 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
     <div className={`${className} post-card bg-[#ffffff] rounded-2xl relative w-full overflow-hidden vi-shadow`}>
       <div className="post-header px-2 pt-2 flex justify-between mt-1 mb-2">
         <div className="info-box flex">
-          <UserAvatar
-            id={'post-avatar'}
-            className={"w-10 h-10 cursor-pointer mr-2"}
-            src={poemData.avt_url}
-            alt={poemData.user_name}
-            fallbackText={poemData.user_name.charAt(0).toUpperCase() || "U"}
-          />
+          <div
+            className="relative inline-block w-10 h-10 me-2 group"
+          >
+            {/* Avatar */}
+            <UserAvatar
+              id={'post-avatar'}
+              className={"w-10 h-10 cursor-pointer"}
+              src={poemData.avt_url}
+              alt={poemData.user_name}
+              fallbackText={poemData.user_name.charAt(0).toUpperCase() || "U"}
+              onClick={() => setOpen(true)}
+            />
+            {/* Plus button */}
+            {userInfo && userInfo.id !== currentUserId && (
+              userInfo.is_following ? (
+                null
+              ) : (
+                <button
+                  type="button"
+                  className="
+                    absolute -bottom-1 -right-1
+                    h-5 w-5 rounded-full
+                    bg-black text-white
+                    flex items-center justify-center
+                    border-2 border-white
+                    scale-90
+                    transition-all duration-200
+                    group-hover:scale-110
+                  "
+                  onClick={() => setOpen(true)}
+                >
+                  <Plus size={12} strokeWidth={2.5} />
+                </button>
+              )
+            )}
+            <ProfilePreviewDialog
+              open={open}
+              onOpenChange={setOpen}
+              avatarUrl={poemData.avt_url}
+              name={userInfo?.full_name || "Người dùng"}
+              username={poemData.user_name}
+              bio={userInfo?.bio || "No bio available"}
+              followers={userInfo?.followers_count || 0}
+              is_following={userInfo?.is_following || false}
+            />
+          </div>
           <div className="info-text flex-1">
             <div className="flex items-center">
               <HoverCard openDelay={200} closeDelay={200}>
@@ -195,13 +236,13 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
                   </span>
                 </HoverCardTrigger>
                 {!isAuthenticated || !token ? null : (
-                  <HoverCardContent align='start' className='rounded-xl w-72'>
+                  <HoverCardContent align='start' className='rounded-xl min-w-80'>
                     {userLoading ? (
                       <div className="flex justify-center items-center p-4">
                         <p>Loading...</p>
                       </div>
                     ) : userInfo ? (
-                      <div className="flex justify-between">
+                      <div className="flex items-center justify-between">
                         <div>
                           <h1 className="text-xl font-bold">{userInfo.full_name || "Người dùng"}</h1>
                           <p className="text-black">@{userInfo.username}</p>
@@ -220,7 +261,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
                       <div className="flex justify-between">
                         <div>
                           <h1 className="text-xl font-bold">{"Người dùng"}</h1>
-                          <p className="text-black">@{"username"}</p>
+                          <p className="text-[15px] font-normal">@{"username"}</p>
                         </div>
                         <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white/20">
                           <Image
@@ -235,15 +276,15 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
                     )}
                     {userInfo && (
                       <div className='space-y-1.5'>
-                        <p className='font-light'>{userInfo.bio || "No bio available"}</p>
-                        <p className='font-light text-[#999]'>{userInfo.followers_count || 0} followers · {userInfo.following_count || 0} following</p>
+                        <p className='text-[15px] font-normal'>{userInfo.bio || "No bio available"}</p>
+                        <p className='text-[15px] font-normal text-muted-foreground'>{userInfo.followers_count || 0} followers</p>
                         {userInfo.id !== currentUserId && (
                           userInfo.is_following ? (
-                            <Button className="mt-1.5 py-2 w-full border bg-white text-black rounded-lg hover:bg-gray-100 cursor-pointer">
+                            <Button className="mt-1.5 py-2 w-full border bg-white text-black font-semibold rounded-lg hover:bg-gray-100 cursor-pointer">
                               Unfollow
                             </Button>
                           ) : (
-                            <Button className="mt-1.5 py-2 w-full bg-black text-white rounded-lg cursor-pointer">
+                            <Button className="mt-1.5 py-2 w-full bg-black text-white font-semibold rounded-lg cursor-pointer">
                               Follow
                             </Button>
                           )
