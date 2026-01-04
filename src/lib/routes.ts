@@ -9,6 +9,8 @@ export const API_ROUTES = {
   GET_USER_BY_ID: "/v1/user/",
   UPDATE_PROFILE: "/v1/user/profile",
   UPDATE_AVATAR: "/v1/user/profile/avatar",
+  FOLLOW_USER: "/v1/user/follow/",
+  UNFOLLOW_USER: "/v1/user/follow/",
   // Poem
   CRUD_POEM: "/v1/poem/",
   GET_POEM_FEED: "/v1/poem/feed",

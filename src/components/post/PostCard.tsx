@@ -26,6 +26,8 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { Button } from '@/components/ui/button'
+import { followUser, unfollowUser } from '@/lib/api/auth'
+import { toast, Toaster } from 'sonner'
 
 const PostCard = ({ className, poemData }: { className: string, poemData: Poem }) => {
   const dispatch = useAppDispatch()
@@ -177,6 +179,28 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
     // }
   }
 
+  const handleFollowUser = async () => {
+    try {
+      if (!userInfo) return
+      await followUser(userInfo.id, token!)
+      setUserInfo({ ...userInfo, is_following: true, followers_count: (userInfo.followers_count || 0) + 1 })
+      toast.success(`You are now following ${userInfo.username}`)
+    } catch (error) {
+      toast.error("Error following user.")
+    }
+  }
+
+  const handleUnfollowUser = async () => {
+    try {
+      if (!userInfo) return
+      await unfollowUser(userInfo.id, token!)
+      setUserInfo({ ...userInfo, is_following: false, followers_count: Math.max((userInfo.followers_count || 0) - 1, 0) })
+      toast.error(`You have unfollowed ${userInfo.username}`)
+    } catch (error) {
+      toast.error("Error unfollowing user.")
+    }
+  }
+
   return (
     <div className={`${className} post-card bg-[#ffffff] rounded-2xl relative w-full overflow-hidden vi-shadow`}>
       <div className="post-header px-2 pt-2 flex justify-between mt-1 mb-2">
@@ -216,16 +240,20 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
                 </button>
               )
             )}
-            <ProfilePreviewDialog
-              open={open}
-              onOpenChange={setOpen}
-              avatarUrl={poemData.avt_url}
-              name={userInfo?.full_name || "Người dùng"}
-              username={poemData.user_name}
-              bio={userInfo?.bio || "No bio available"}
-              followers={userInfo?.followers_count || 0}
-              is_following={userInfo?.is_following || false}
-            />
+            {!isAuthenticated || !token ? null : (
+              <ProfilePreviewDialog
+                open={open}
+                onOpenChange={setOpen}
+                avatarUrl={poemData.avt_url}
+                name={userInfo?.full_name || "Người dùng"}
+                username={poemData.user_name}
+                bio={userInfo?.bio || "No bio available"}
+                followers={userInfo?.followers_count || 0}
+                is_following={userInfo?.is_following || false}
+                followUser={handleFollowUser}
+                unfollowUser={handleUnfollowUser}
+              />
+            )}
           </div>
           <div className="info-text flex-1">
             <div className="flex items-center">
@@ -280,11 +308,17 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
                         <p className='text-[15px] font-normal text-muted-foreground'>{userInfo.followers_count || 0} followers</p>
                         {userInfo.id !== currentUserId && (
                           userInfo.is_following ? (
-                            <Button className="mt-1.5 py-2 w-full border bg-white text-black font-semibold rounded-lg hover:bg-gray-100 cursor-pointer">
+                            <Button 
+                              className="mt-1.5 py-2 w-full border bg-white text-black font-semibold rounded-lg hover:bg-gray-100 cursor-pointer"
+                              onClick={handleUnfollowUser}
+                            >
                               Unfollow
                             </Button>
                           ) : (
-                            <Button className="mt-1.5 py-2 w-full bg-black text-white font-semibold rounded-lg cursor-pointer">
+                            <Button 
+                              className="mt-1.5 py-2 w-full bg-black text-white font-semibold rounded-lg cursor-pointer"
+                              onClick={handleFollowUser}
+                            >
                               Follow
                             </Button>
                           )
@@ -411,6 +445,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
         isOpen={showComments}
         onClose={() => setShowComments(false)}
       />
+      <Toaster position='bottom-center' richColors/>
     </div>
   )
 }

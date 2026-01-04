@@ -17,6 +17,8 @@ interface ProfilePreviewProps {
   bio: string
   followers: number
   is_following: boolean
+  followUser: () => void
+  unfollowUser: () => void
 }
 
 export function ProfilePreviewDialog({
@@ -27,7 +29,9 @@ export function ProfilePreviewDialog({
   username,
   bio,
   followers,
-  is_following
+  is_following,
+  followUser,
+  unfollowUser
 }: ProfilePreviewProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,11 +65,17 @@ export function ProfilePreviewDialog({
         </p>
 
         {is_following ? (
-          <Button className="mt-1.5 py-2 w-full border bg-white text-black font-semibold rounded-lg hover:bg-gray-100 cursor-pointer">
+          <Button
+            className="mt-1.5 py-2 w-full border bg-white text-black font-semibold rounded-lg hover:bg-gray-100 cursor-pointer"
+            onClick={unfollowUser}
+          >
             Unfollow
           </Button>
         ) :
-          <Button className="mt-1.5 py-2 w-full bg-black text-white font-semibold rounded-lg cursor-pointer">
+          <Button
+            className="mt-1.5 py-2 w-full bg-black text-white font-semibold rounded-lg cursor-pointer"
+            onClick={followUser}
+          >
             Follow
           </Button>
         }

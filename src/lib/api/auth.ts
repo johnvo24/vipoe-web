@@ -53,3 +53,15 @@ export async function signUp(data: any) {
 export async function verifyEmail(token: string) {
   await api.post(`${API_ROUTES.VERIFY_EMAIL}/${token}`)
 }
+
+export async function followUser(userId: number, token: string) {
+  await api.post(`${API_ROUTES.FOLLOW_USER}${userId}`, null, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function unfollowUser(userId: number, token: string) {
+  await api.delete(`${API_ROUTES.UNFOLLOW_USER}${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
