@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from "react";
 import { formatNumber } from "@/lib/utils";
 import { Bookmark, Check, Heart, ImagePlus, MessageCircleMore, Send } from "lucide-react"
+import { ShareAsImageModal } from "../share/ShareAsImageModal";
 
 interface Props {
   editMode: boolean;
@@ -17,6 +19,8 @@ interface Props {
   onSavePoem?: () => void;
   onUnsavePoem?: () => void;
   onCommentClick?: () => void;
+  poemData?: any;
+  isMargin?: boolean;
 }
 
 const InteractionBox = ({
@@ -33,8 +37,10 @@ const InteractionBox = ({
   onSavePoem,
   onUnsavePoem,
   onCommentClick,
+  poemData,
+  isMargin = true,
 }: Props) => {
-
+  const [open, setOpen] = useState(false)
 
   if (editMode) return (
     <div className="interaction-box vi-text-third flex items-center rounded-lg pt-0.5 ml-11 mr-6 pb-1 justify-between">
@@ -52,36 +58,41 @@ const InteractionBox = ({
   )
 
   return (
-    <div className="interaction-box vi-text-third flex rounded-lg pt-0.5 ml-11 pb-1">
-      { isLiked ? (
+    <div className={`interaction-box flex rounded-lg pt-0.5 pb-1 ${isMargin ? 'vi-text-third ml-11' : ''}`}>
+      {isLiked ? (
         <button onClick={onUnlikePoem} className="action-btn flex items-center vi-button px-3 gap-1">
           <Heart className="fill-current text-red-500" size={16} />
-          <span className="text-sm">{ formatNumber(likeCount) }</span>
+          <span className="text-sm">{formatNumber(likeCount)}</span>
         </button>
       ) : (
-        <button onClick={onLikePoem}className="action-btn flex items-center vi-button px-3 gap-1">
+        <button onClick={onLikePoem} className="action-btn flex items-center vi-button px-3 gap-1">
           <Heart className="" size={16} />
-          <span className="text-sm">{ formatNumber(likeCount) }</span>
+          <span className="text-sm">{formatNumber(likeCount)}</span>
         </button>
       )}
       <button onClick={onCommentClick} className="action-btn flex items-center vi-button px-3 gap-1">
         <MessageCircleMore className="" size={16} />
-        <span className="text-sm me">{ formatNumber(commentCount) }</span>
+        <span className="text-sm me">{formatNumber(commentCount)}</span>
       </button>
-      { isSaved ? (
+      {isSaved ? (
         <button onClick={onUnsavePoem} className="action-btn flex vi-button px-3 gap-1">
           <Bookmark className="fill-current text-yellow-400" size={16} />
-          <span className="text-sm me">{ formatNumber(saveCount) }</span>
+          <span className="text-sm me">{formatNumber(saveCount)}</span>
         </button>
       ) : (
         <button onClick={onSavePoem} className="action-btn flex vi-button px-3 gap-1">
           <Bookmark className="" size={16} />
-          <span className="text-sm me">{ formatNumber(saveCount) }</span>
+          <span className="text-sm me">{formatNumber(saveCount)}</span>
         </button>
       )}
-      <button className="action-btn flex vi-button px-3 gap-1">
+      <button className="action-btn flex vi-button px-3 gap-1" onClick={() => setOpen(true)}>
         <Send className="" size={16} />
       </button>
+      <ShareAsImageModal
+        open={open}
+        onClose={() => setOpen(false)}
+        poemData={poemData}
+      />
     </div>
   )
 }

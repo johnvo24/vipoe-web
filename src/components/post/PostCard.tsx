@@ -439,6 +439,7 @@ const PostCard = ({ className, poemData }: { className: string, poemData: Poem }
         onSavePoem={handleSavePoem}
         onUnsavePoem={handleUnsavePoem}
         onCommentClick={handleCommentClick}
+        poemData={poemData}
       />
       <CommentSection
         poemId={poemData.id}
