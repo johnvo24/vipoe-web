@@ -10,6 +10,11 @@ export async function getUserPoems(token: string): Promise<Poem[]> {
   return res.data
 }
 
+export async function getAllGenres(): Promise<object[]> {
+  const res = await api.get(API_ROUTES.GET_ALL_GENRES)
+  return res.data
+}
+
 export async function createPoem(token: string, poemData: FormData): Promise<CreatePome> {
   const res = await api.post(API_ROUTES.CRUD_POEM, poemData, {
     headers: {
