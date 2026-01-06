@@ -1,242 +1,217 @@
-"use client"
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { aiApi } from '@/lib/services'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Message, Chain, Step, AssistantMode } from '@/types/assistant'
-import AssistantWelcome from '@/components/assistant/AssistantWelcome'
-import AssistantInput from '@/components/assistant/AssistantInput'
-import { useAppDispatch, useAppSelector } from '@/lib/hooks/reduxHooks'
-import { selectAuthLoading, selectIsAuthenticated, selectToken, selectUser } from '@/lib/store/auth/authSlice'
-import ChatMessageList from '@/components/assistant/ChatMessageList'
-import { sendChatMessage } from '@/lib/api/assistant'
-import { logout } from '@/lib/store/auth/authThunks'
-
-const chatModel = 'auto'
+import AssistantInput from "@/app/assistant/components/AssistantInput";
+import AssistantWelcome from "@/app/assistant/components/AssistantWelcome";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  CheckIcon,
+  ChevronLeft,
+  ChevronRight,
+  File,
+  RefreshCw,
+  XIcon,
+} from "lucide-react";
+import { useState } from "react";
+import MessageItem from "./components/MessageItem";
+import { TypingIndicator } from "./components/TypingIndicator";
+import { useAssistant } from "./hooks";
+import {
+  convertAIResponseToReasoningResult,
+  convertChainToMessages,
+  reasoningResultToFriendlyMessage,
+} from "./utils";
 
 const PoemAssistant = () => {
-  const [messageList, setMessageList] = useState<Message[]>([])
-  const [input, setInput] = useState("")
-  const [mode, setMode] = useState<AssistantMode>('chat')
-  const [isSearchMode, setIsSearchMode] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [chain, setChain] = useState<Chain | null>(null)
-  
-  const dispatch = useAppDispatch()
-  const router = useRouter()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const user = useAppSelector(selectUser)
-  const token = useAppSelector(selectToken)
-  const isAuthenticated = useAppSelector(selectIsAuthenticated)
-  const authLoading = useAppSelector(selectAuthLoading)
-  const endOfMessagesRef = useRef<HTMLDivElement>(null);
-  
-  const hasMessages = messageList.length > 0
-  const lastStep = chain?.steps?.[chain.steps.length - 1]
-  const isEditComplete = lastStep?.step_content?.includes("<eos>")
+  const [input, setInput] = useState("");
 
-  const addMessage = (message: Omit<Message, 'id'>) => {
-    setMessageList(prev => [...prev, { ...message, id: Date.now().toString() }])
-  }
+  const {
+    authLoading,
+    messageList,
+    chain,
+    currentSteps,
+    setCurrentSteps,
+    selection,
+    setSelection,
+    onTakeSelection,
+    editCompleted,
+    endOfMessagesRef,
+    handleEditMessage,
+    loading,
+    mode,
+    setMode,
+    isSearchMode,
+    setIsSearchMode,
+    sendMessage,
+  } = useAssistant();
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return
+    if (!input.trim()) return;
+    await sendMessage(input.trim());
+    setInput("");
+  };
 
-    if (mode === 'chat') {
-      await handleChatModeSend()
-    } else {
-      await handleEditModeSend()
-    }
-  }
-
-  const handleChatModeSend = async () => {
-    const userMessage = input.trim()
-    addMessage({ type: 'user', content: userMessage })
-    setInput("")
-    setLoading(true)
-
-    try {
-      if (!token) {
-        dispatch(logout())
-        router.push('/sign-in')
-        return
-      }
-
-      console.log(isSearchMode);
-      
-
-      const payload = {
-        model: chatModel,
-        search_mode: isSearchMode,
-        prompt: userMessage
-      }
-      const resData = await sendChatMessage(token, payload);
-
-      addMessage({ 
-        type: 'ai', 
-        content: resData.answer,
-        metadata: { model: chatModel, prompt: userMessage }
-      })
-    } catch (error) {
-      console.error("Chat Message Send Error:", error)
-      addMessage({ 
-        type: 'ai', 
-        content: "Oops! Something went wrong while processing your message. Please try again later."
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleEditModeSend = async () => {
-    const userMessage = input.trim()
-    addMessage({ type: 'user', content: userMessage })
-    setInput("")
-    setLoading(true)
-
-    addMessage({
-      type: 'ai',
-      content: "The poem editing feature is currently under development. Please check back soon for updates."
-    })
-    
-    setLoading(false)
-    // try {
-    //   // Start a new chain for editing
-    //   const newChain: Chain = {
-    //     original_poem: userMessage,
-    //     steps: []
-    //   }
-    //   setChain(newChain)
-
-    //   // Request AI to edit the poem (first step)
-    //   const response = await aiApi.post('/edit-poem/step/', newChain)
-      
-    //   // Add AI step message
-    //   addMessage({ 
-    //     type: 'ai', 
-    //     content: response.data.step_content 
-    //   })
-
-    //   // Add step to chain
-    //   const step: Step = {
-    //     error_poem: response.data.error_poem,
-    //     step_content: response.data.step_content,
-    //     edited_poem: response.data.edited_poem,
-    //     reasoning_score: 0,
-    //     meaning_score: true,
-    //     imagery_score: true,
-    //   }
-
-    //   setChain(prev => ({
-    //     ...prev!,
-    //     steps: [...prev!.steps, step]
-    //   }))
-
-    //   // If edited poem is available, add as a separate message
-    //   if (response.data.edited_poem) {
-    //     addMessage({ 
-    //       type: 'ai', 
-    //       content: response.data.edited_poem 
-    //     })
-    //   }
-    // } catch (error) {
-    //   console.error("Lỗi khi sửa thơ:", error)
-    //   addMessage({ 
-    //     type: 'ai', 
-    //     content: "Oops! Something went wrong while editing your poem. Please try again later."
-    //   })
-    // } finally {
-    //   setLoading(false)
-    // }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleContinueEditing = async () => {
-    if (!chain || isEditComplete) return
-    setLoading(true)
-
-    try {
-      const response = await aiApi.post(`${process.env.NEXT_PUBLIC_AI_API_BASE_URL}/edit-poem/step/`, chain)
-      
-      addMessage({ 
-        type: 'ai', 
-        content: response.data.step_content 
-      })
-
-      const step: Step = {
-        error_poem: response.data.error_poem,
-        step_content: response.data.step_content,
-        edited_poem: response.data.edited_poem,
-        reasoning_score: 0,
-        meaning_score: true,
-        imagery_score: true,
-      }
-
-      setChain(prev => ({
-        ...prev!,
-        steps: [...prev!.steps, step]
-      }))
-
-      if (response.data.edited_poem) {
-        addMessage({ 
-          type: 'ai', 
-          content: response.data.edited_poem 
-        })
-      }
-    } catch (error) {
-      console.error("Lỗi khi tiếp tục sửa thơ:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if (!isAuthenticated && !authLoading) {
-      router.push('/sign-in')
-    }
-  }, [isAuthenticated, authLoading, router])
-
-  useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messageList]);
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+  };
 
   if (authLoading) {
     return (
-      <div className='main w-full h-screen flex items-center justify-center'>
-        <Skeleton className='w-full max-w-xl m-auto h-[74px] rounded-full' />
+      <div className="main w-full h-screen flex items-center justify-center">
+        <Skeleton className="w-full max-w-xl m-auto h-[74px] rounded-full" />
       </div>
-    )
+    );
   }
 
   return (
-    <div className={"poem-assistant-box h-full"}>
-      {!hasMessages ? (
-        <AssistantWelcome 
-          mode={mode} 
-          onSuggestionClick={(suggestion) => {
-            setInput(suggestion)
-          }}
-        />
-      ) : (
+    <div className="poem-assistant-box h-full">
+      {(messageList.length > 0 && mode !== "edit") ||
+      (chain && mode === "edit") ? (
         <div className="chat-content pb-[200px]">
-          <ChatMessageList 
-            messageList={messageList} 
-            setChatMessageList={setMessageList}
-            endOfMessagesRef={endOfMessagesRef}
-          />
+          {mode !== "edit"
+            ? messageList.map((messageData, id) => (
+                <MessageItem key={id} messageData={messageData} />
+              ))
+            : chain &&
+              convertChainToMessages(chain).map((messageData, id) => (
+                <MessageItem key={id} messageData={messageData} />
+              ))}
+
+          {currentSteps.length > 0 && mode == "edit" && !loading && (
+            <>
+              <MessageItem
+                messageData={{
+                  id: "999",
+                  type: "ai",
+                  content: reasoningResultToFriendlyMessage(
+                    convertAIResponseToReasoningResult(
+                      currentSteps[selection].step_content
+                    )
+                  ),
+                }}
+              />
+
+              <div className="px-2 max-sm:px-3">
+                <div className="relative w-full max-h-[248px] overflow-scroll border rounded-lg -mt-2 mb-3 bg-gray-50">
+                  <button
+                    className="flex gap-0.5 items-center absolute top-2 right-3 text-xs text-gray-400 font-bold hover:text-gray-600 active:opacity-80 cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        currentSteps[selection].edited_poem || ""
+                      );
+                    }}
+                  >
+                    COPY
+                    <File className="size-3" />
+                  </button>
+                  <div className="flex justify-center whitespace-pre-line text-center py-4  text-gray-700 text-sm">
+                    {currentSteps[selection].edited_poem}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 items-center px-1 max-sm:px-3">
+                <div className="flex items-center">
+                  <button
+                    onClick={() =>
+                      setSelection(
+                        (prev) =>
+                          (prev + currentSteps.length - 1) % currentSteps.length
+                      )
+                    }
+                    className="text-gray-400 cursor-pointer hover:text-gray-900 active:opacity-80"
+                  >
+                    <ChevronLeft />
+                  </button>
+                  <button
+                    onClick={() =>
+                      setSelection((prev) => (prev + 1) % currentSteps.length)
+                    }
+                    className="text-gray-400 cursor-pointer hover:text-gray-900 active:opacity-80"
+                  >
+                    <ChevronRight />
+                  </button>
+                  <p className="select-none text-gray-400 w-[48px] py-1 flex justify-center font-medium text-xs rounded-full bg-gray-100 font-mono">
+                    {selection + 1}〡{currentSteps.length}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => handleEditMessage()}
+                  className="text-gray-400 cursor-pointer hover:text-gray-900 active:opacity-80"
+                >
+                  <RefreshCw size={20} />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setCurrentSteps([]);
+                    setSelection(0);
+                  }}
+                  className="text-gray-400 cursor-pointer hover:text-gray-900 active:opacity-80"
+                >
+                  <XIcon size={26} />
+                </button>
+
+                <button
+                  onClick={onTakeSelection}
+                  className="bg-orange-300 text-xs flex gap-0.5 items-center py-1 px-2 rounded-full text-gray-900 cursor-pointer hover:bg-orange-300/80 active:opacity-80"
+                >
+                  ÁP DỤNG
+                  <CheckIcon className="size-4" />
+                </button>
+              </div>
+            </>
+          )}
+
+          {currentSteps.length <= 0 && mode == "edit" && !loading && (
+            <>
+              <div className="px-2 max-sm:px-3">
+                <div className="relative w-full max-h-[248px] overflow-scroll border rounded-lg -mt-2 mb-3 bg-gray-50">
+                  <button
+                    className="flex gap-0.5 items-center absolute top-2 right-3 text-xs text-gray-400 font-bold hover:text-gray-600 active:opacity-80 cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        chain?.steps[-1]?.edited_poem ||
+                          chain?.original_poem ||
+                          ""
+                      );
+                    }}
+                  >
+                    COPY
+                    <File className="size-3" />
+                  </button>
+                  <div className="flex justify-center whitespace-pre-line text-center py-4  text-gray-700 text-sm">
+                    {chain?.steps[-1]?.edited_poem ||
+                      chain?.original_poem ||
+                      ""}
+                  </div>
+                </div>
+              </div>
+
+              {!editCompleted && (
+                <div className="flex w-full justify-end">
+                  <Button
+                    className="cursor-pointer active:opacity-80"
+                    size="sm"
+                    onClick={() => handleEditMessage()}
+                  >
+                    CONTINUE
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+
+          {loading && <TypingIndicator />}
+          <div ref={endOfMessagesRef} className="h-0"></div>
         </div>
+      ) : (
+        <AssistantWelcome
+          mode={mode}
+          onSuggestionClick={handleSuggestionClick}
+        />
       )}
-      {/* {loading && <Skeleton className="w-2/4 h-20" />} */}
-      {/* {mode === 'edit' && chain && !isEditComplete && messages.length > 0 && (
-        <Button
-          onClick={handleContinueEditing}
-          disabled={loading}
-          className="bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-        >
-          {loading ? "Đang xử lý..." : "Tiếp tục sửa"}
-        </Button>
-      )} */}
 
       <div className="fixed left-0 right-0 bottom-0 max-w-[640px] mx-auto h-[90px] sm:h-[106px] bg-white"></div>
       <AssistantInput
@@ -250,7 +225,7 @@ const PoemAssistant = () => {
         onSend={handleSendMessage}
       />
     </div>
-  )
-}
+  );
+};
 
-export default PoemAssistant
+export default PoemAssistant;

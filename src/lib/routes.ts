@@ -22,4 +22,5 @@ export const API_ROUTES = {
 
   // Assistant
   ASSISTANT_CHAT: "/v1/assistant/chat",
-}
+  ASSISTANT_EDIT: "/v1/assistant/edit",
+};
