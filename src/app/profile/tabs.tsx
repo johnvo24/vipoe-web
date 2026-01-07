@@ -15,7 +15,7 @@ const TabsProfile = () => {
   const user = useAppSelector(selectUser)
   const loading = useAppSelector(selectAuthLoading)
   const [userData, setUserData] = useState<UserType | null>(null)
-  console.log("Current user from Redux:", user)
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -23,7 +23,6 @@ const TabsProfile = () => {
         if (token) {
           const response = await getProfile(token)
           setUserData(response)
-          console.log("Fetched profile data:", response)
         } else {
           console.error("No token found in localStorage")
           setUserData(null)
