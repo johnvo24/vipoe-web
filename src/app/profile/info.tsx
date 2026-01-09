@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react'
-import Image from 'next/image'
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,77 +8,80 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from '@/components/ui/button'
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { updateProfile, updateAvatar } from '@/lib/api/auth'
-import { Camera } from 'lucide-react'
-import { AccountInformationProps } from '@/types/profile'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { updateAvatar, updateProfile } from "@/lib/api/auth";
+import { AccountInformationProps } from "@/types/profile";
+import { Camera } from "lucide-react";
+import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
 
 const AccountInformation = (props: AccountInformationProps) => {
   const [data, setData] = useState({
-    full_name: props.full_name || '',
-    bio: props.bio || '',
-    date_of_birth: props.date_of_birth || '2023-01-01',
-    phone: props.phone || '',
-    location: props.location || '',
-    avt_url: props.avt_url || '',
-  })
-  const [avatar, setAvatar] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string>(props.avt_url || "/images/st-mtp.jpg")
-  const fileInputRef = useRef<HTMLInputElement>(null)
+    full_name: props.full_name || "",
+    bio: props.bio || "",
+    date_of_birth: props.date_of_birth || "2023-01-01",
+    phone: props.phone || "",
+    location: props.location || "",
+    avt_url: props.avt_url || "",
+  });
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>(
+    props.avt_url || "/images/st-mtp.jpg"
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (props.avt_url) {
-      setPreview(props.avt_url)
+      setPreview(props.avt_url);
     }
-  }, [props.avt_url])
+  }, [props.avt_url]);
 
   const handleSubmit = async () => {
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       if (token) {
-        await updateProfile(token, data)
-        alert("Update profile successfully!")
+        await updateProfile(token, data);
+        alert("Update profile successfully!");
       }
     } catch (error) {
-      console.error("Failed to update profile:", error)
+      console.error("Failed to update profile:", error);
     }
-  }
+  };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      setAvatar(file)
-      setPreview(URL.createObjectURL(file))
+      setAvatar(file);
+      setPreview(URL.createObjectURL(file));
     }
-  }
+  };
 
   const handleAvatarUpload = async () => {
     if (avatar) {
-      const formData = new FormData()
-      formData.append('avatar', avatar)
+      const formData = new FormData();
+      formData.append("avatar", avatar);
       try {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
         if (token) {
-          const response = await updateAvatar(token, formData)
+          const response = await updateAvatar(token, formData);
           if (response !== null) {
-            alert("Update avatar successfully!")
-            setAvatar(null)
+            alert("Update avatar successfully!");
+            setAvatar(null);
           }
         }
       } catch (error) {
-        console.error("Failed to update avatar:", error)
+        console.error("Failed to update avatar:", error);
       }
     }
-  }
+  };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "None"
-    const date = new Date(dateString)
-    return date.toISOString().split('T')[0]
-  }
+  // const formatDate = (dateString: string) => {
+  //   if (!dateString) return "None"
+  //   const date = new Date(dateString)
+  //   return date.toISOString().split('T')[0]
+  // }
 
   return (
     <div className="space-y-8">
@@ -124,10 +126,10 @@ const AccountInformation = (props: AccountInformationProps) => {
 
                 {avatar && (
                   <Button
-                    type='button'
+                    type="button"
                     onClick={handleAvatarUpload}
-                    size={'sm'}
-                    className='cursor-pointer'
+                    size={"sm"}
+                    className="cursor-pointer"
                   >
                     Update Avatar
                   </Button>
@@ -140,7 +142,9 @@ const AccountInformation = (props: AccountInformationProps) => {
                 <Input
                   id="fullname"
                   value={data.full_name}
-                  onChange={(e) => setData({ ...data, full_name: e.target.value })}
+                  onChange={(e) =>
+                    setData({ ...data, full_name: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -164,7 +168,9 @@ const AccountInformation = (props: AccountInformationProps) => {
                 <Input
                   id="location"
                   value={data.location}
-                  onChange={(e) => setData({ ...data, location: e.target.value })}
+                  onChange={(e) =>
+                    setData({ ...data, location: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -173,12 +179,18 @@ const AccountInformation = (props: AccountInformationProps) => {
                   id="date_of_birth"
                   type="date"
                   value={data.date_of_birth}
-                  onChange={(e) => setData({ ...data, date_of_birth: e.target.value })}
+                  onChange={(e) =>
+                    setData({ ...data, date_of_birth: e.target.value })
+                  }
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" className='py-6 w-full cursor-pointer' onClick={handleSubmit}>
+              <Button
+                type="submit"
+                className="py-6 w-full cursor-pointer"
+                onClick={handleSubmit}
+              >
                 Lưu thay đổi
               </Button>
             </DialogFooter>
@@ -186,7 +198,7 @@ const AccountInformation = (props: AccountInformationProps) => {
         </Dialog>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AccountInformation
+export default AccountInformation;

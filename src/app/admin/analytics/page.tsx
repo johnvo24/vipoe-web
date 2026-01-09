@@ -1,62 +1,61 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatCard } from "@/components/admin/stat-card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
+} from "@/components/ui/chart";
+import { Eye, MousePointer, TrendingUp, Users } from "lucide-react";
 import {
   Bar,
   BarChart,
+  Cell,
   Line,
   LineChart,
   Pie,
   PieChart,
-  Cell,
-  ResponsiveContainer,
   XAxis,
   YAxis,
-} from 'recharts';
-import { StatCard } from '@/components/admin/stat-card';
-import { TrendingUp, Users, Eye, MousePointer } from 'lucide-react';
+} from "recharts";
 
 const visitorData = [
-  { month: 'Jan', visitors: 4000 },
-  { month: 'Feb', visitors: 3000 },
-  { month: 'Mar', visitors: 5000 },
-  { month: 'Apr', visitors: 2780 },
-  { month: 'May', visitors: 1890 },
-  { month: 'Jun', visitors: 2390 },
-  { month: 'Jul', visitors: 3490 },
-  { month: 'Aug', visitors: 4200 },
-  { month: 'Sep', visitors: 3800 },
-  { month: 'Oct', visitors: 4100 },
-  { month: 'Nov', visitors: 4500 },
-  { month: 'Dec', visitors: 5000 },
+  { month: "Jan", visitors: 4000 },
+  { month: "Feb", visitors: 3000 },
+  { month: "Mar", visitors: 5000 },
+  { month: "Apr", visitors: 2780 },
+  { month: "May", visitors: 1890 },
+  { month: "Jun", visitors: 2390 },
+  { month: "Jul", visitors: 3490 },
+  { month: "Aug", visitors: 4200 },
+  { month: "Sep", visitors: 3800 },
+  { month: "Oct", visitors: 4100 },
+  { month: "Nov", visitors: 4500 },
+  { month: "Dec", visitors: 5000 },
 ];
 
 const categoryData = [
-  { name: 'Electronics', value: 400, color: '#3b82f6' },
-  { name: 'Clothing', value: 300, color: '#06b6d4' },
-  { name: 'Food', value: 200, color: '#10b981' },
-  { name: 'Books', value: 150, color: '#f59e0b' },
+  { name: "Electronics", value: 400, color: "#3b82f6" },
+  { name: "Clothing", value: 300, color: "#06b6d4" },
+  { name: "Food", value: 200, color: "#10b981" },
+  { name: "Books", value: 150, color: "#f59e0b" },
 ];
 
 const deviceData = [
-  { device: 'Desktop', sessions: 3200 },
-  { device: 'Mobile', sessions: 4500 },
-  { device: 'Tablet', sessions: 1200 },
+  { device: "Desktop", sessions: 3200 },
+  { device: "Mobile", sessions: 4500 },
+  { device: "Tablet", sessions: 1200 },
 ];
 
 const chartConfig = {
   visitors: {
-    label: 'Visitors',
-    color: 'hsl(var(--chart-1))',
+    label: "Visitors",
+    color: "hsl(var(--chart-1))",
   },
   sessions: {
-    label: 'Sessions',
-    color: 'hsl(var(--chart-2))',
+    label: "Sessions",
+    color: "hsl(var(--chart-2))",
   },
 };
 
