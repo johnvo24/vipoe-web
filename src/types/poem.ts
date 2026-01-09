@@ -47,3 +47,10 @@ export interface PoemFeedState {
   limit: number
   isInitialLoading: boolean
 }
+
+export type EmojiItem = {
+  id: string
+  symbol: string
+  x: number
+  y: number
+}

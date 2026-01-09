@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -22,64 +22,92 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import UserAvatar from '@/components/ui/avatar';
-import { MoreHorizontal, Search, User, UserPlus } from 'lucide-react';
-
-const users = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    role: 'admin',
-    status: 'active',
-    joinDate: '2024-01-15',
-    orders: 23,
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    role: 'user',
-    status: 'active',
-    joinDate: '2024-01-10',
-    orders: 15,
-  },
-  {
-    id: 3,
-    name: 'Mike Johnson',
-    email: 'mike@example.com',
-    role: 'user',
-    status: 'inactive',
-    joinDate: '2024-01-05',
-    orders: 8,
-  },
-  {
-    id: 4,
-    name: 'Sarah Williams',
-    email: 'sarah@example.com',
-    role: 'moderator',
-    status: 'active',
-    joinDate: '2024-01-12',
-    orders: 42,
-  },
-  {
-    id: 5,
-    name: 'Tom Brown',
-    email: 'tom@example.com',
-    role: 'user',
-    status: 'active',
-    joinDate: '2024-01-08',
-    orders: 19,
-  },
-];
+import { MoreHorizontal, Search, UserPlus } from 'lucide-react';
+import { AddUserDialog } from '@/components/admin/add-user-dialog';
+import { EditUserDialog } from '@/components/admin/edit-user-dialog';
+import { useAppSelector, useAppDispatch } from '@/lib/hooks/reduxHooks'
+import { selectAuthLoading, selectToken } from '@/lib/store/auth/authSlice'
+import { User } from '@/types/auth'
+import { getUsers, createUser, updateUser, changeUserPassword, deleteUser } from '@/lib/api/admin';
+import { toast, Toaster } from 'sonner';
 
 export default function UsersPage() {
+  const dispatch = useAppDispatch()
+  const token = useAppSelector(selectToken)
+  const authLoading = useAppSelector(selectAuthLoading)
   const [searchQuery, setSearchQuery] = useState('');
+  const [users, setUsers] = useState<User[]>([]);
+  const [addUserOpen, setAddUserOpen] = useState(false);
+  const [editUserOpen, setEditUserOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | undefined>();
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = users.filter(user =>
+    user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const data = await getUsers(token!);
+        setUsers(data);
+      } catch (error) {
+        toast.error('Failed to fetch users');
+      }
+    }
+    fetchUsers();
+  }, [token, authLoading, dispatch]);
+
+  const handleAddUser = async (data: { full_name: string; username: string; email: string; password: string }) => {
+    try {
+      const newUser = await createUser(data, token!);
+      setUsers([...users, newUser]);
+      toast.success(`User "${data.username}" added successfully`);
+    } catch (error) {
+      toast.error('Failed to add user');
+    }
+  };
+
+  const handleEditUser = async (data: any) => {
+    try {
+      const updatedUser = await updateUser(selectedUser!.id, data, token!);
+      setUsers(users.map(u => u.id === selectedUser!.id ? updatedUser : u));
+      toast.success('User updated successfully');
+      setEditUserOpen(false);
+      setSelectedUser(undefined);
+    } catch (error) {
+      toast.error('Failed to update user');
+    }
+  };
+
+  const handlePasswordChange = async (data: {
+    old_password: string;
+    new_password: string;
+  }) => {
+    try {
+      await changeUserPassword(data, token!);
+      toast.success('Password updated successfully');
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to update password');
+      throw error;
+    }
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      await deleteUser(userId, token!);
+      toast.success('User deleted successfully');
+      setUsers(users.filter(u => u.id !== userId));
+    } catch (error) {
+      toast.error('Failed to delete user');
+    }
+  };
+
+  const openEditDialog = (user: User) => {
+    setSelectedUser(user);
+    setEditUserOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -90,7 +118,7 @@ export default function UsersPage() {
             Manage your user accounts and permissions
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setAddUserOpen(true)}>
           <UserPlus className="mr-2 h-4 w-4" />
           Add User
         </Button>
@@ -117,34 +145,46 @@ export default function UsersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
+                <TableHead>Username</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Orders</TableHead>
+                <TableHead>Email Verified</TableHead>
                 <TableHead>Join Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
+              {filteredUsers.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-4">
+                    No users found.
+                  </TableCell>
+                </TableRow>
+              )}
               {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <UserAvatar fallbackText='T'/>
+                      <UserAvatar
+                        id={'user-avatar-' + user.id}
+                        className={"w-10 h-10 cursor-pointer"}
+                        src={user.avt_url}
+                        alt={user.username}
+                        fallbackText={user.username.charAt(0).toUpperCase()}
+                      />
                       <div>
-                        <p className="font-medium">{user.name}</p>
+                        <p className="font-medium">{user.full_name || user.username}</p>
                         <p className="text-sm text-muted-foreground">
                           {user.email}
                         </p>
                       </div>
                     </div>
                   </TableCell>
+                  <TableCell><span>{user.username}</span></TableCell>
                   <TableCell>
                     <Badge
                       variant={
                         user.role === 'admin'
                           ? 'default'
-                          : user.role === 'moderator'
-                          ? 'secondary'
                           : 'outline'
                       }
                     >
@@ -154,15 +194,14 @@ export default function UsersPage() {
                   <TableCell>
                     <Badge
                       variant={
-                        user.status === 'active' ? 'default' : 'secondary'
+                        user.is_verified ? 'default' : 'secondary'
                       }
                     >
-                      {user.status}
+                      {user.is_verified ? 'Verified' : 'Unverified'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{user.orders}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {user.joinDate}
+                    {new Date(user.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -174,11 +213,17 @@ export default function UsersPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit User</DropdownMenuItem>
-                        <DropdownMenuItem>Change Role</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openEditDialog(user)}>
+                          Edit User
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openEditDialog(user)}>
+                          Change Role
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => handleDeleteUser(user.id)}
+                        >
                           Delete User
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -190,6 +235,24 @@ export default function UsersPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <AddUserDialog
+        open={addUserOpen}
+        onOpenChange={setAddUserOpen}
+        onSubmit={handleAddUser}
+      />
+
+      <EditUserDialog
+        open={editUserOpen}
+        onOpenChange={(open) => {
+          setEditUserOpen(open);
+          if (!open) setSelectedUser(undefined);
+        }}
+        user={selectedUser}
+        onSubmit={handleEditUser}
+        onPasswordChange={handlePasswordChange}
+      />
+      <Toaster position='bottom-right' richColors />
     </div>
   );
 }
