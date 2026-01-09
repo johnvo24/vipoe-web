@@ -74,3 +74,11 @@ export function splitPoemAndCalcSlides(poemContent: string): {
     result
   }
 }
+export function splitByNewLine(text: string): string[] {
+  return text
+    .replace(/\\n/g, "\n")   // 🔥 QUAN TRỌNG
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+}
+

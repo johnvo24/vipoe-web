@@ -24,6 +24,18 @@ export interface Poem {
   like_count: number
   comment_count: number
   is_liked: boolean
+  save_count: number
+}
+
+export interface CreatePome {
+  genre_id: number
+  prompt: string
+  title: string
+  content: string
+  note: string
+  tags: string
+  is_public: boolean
+  image: string
 }
 
 export interface PoemFeedState {

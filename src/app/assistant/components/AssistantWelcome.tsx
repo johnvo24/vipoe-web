@@ -1,33 +1,32 @@
-import { Button } from '@/components/ui/button'
-import { Sparkles } from "lucide-react"
-import { AssistantMode } from '@/types/assistant'
+import { Button } from "@/components/ui/button";
+import { AssistantMode } from "@/types/assistant";
+import { Sparkles } from "lucide-react";
 
 interface AssistantWelcomeProps {
-  mode: AssistantMode
-  onSuggestionClick?: (suggestion: string) => void
+  mode: AssistantMode;
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
-export default function AssistantWelcome({ mode, onSuggestionClick }: AssistantWelcomeProps) {
+export default function AssistantWelcome({
+  mode,
+  onSuggestionClick,
+}: AssistantWelcomeProps) {
   const writeSuggestions = [
     "Viết một bài thơ về mùa xuân.",
     "Sáng tác một bài thơ về tình bạn.",
-    "Hãy giúp tôi bắt đầu một bài thơ lãng mạn."
-  ]
+    "Hãy giúp tôi bắt đầu một bài thơ lãng mạn.",
+  ];
 
   const editSuggestions = [
-    "Giúp tôi chỉnh sửa bài thơ này cho mượt mà hơn.",
-    "Hãy làm cho bài thơ này cảm xúc hơn.",
-    "Đề xuất cách cải thiện nhịp điệu cho bài thơ."
-  ]
+    "Hôm nay chăm chỉ cần cù\nTương lai rực rỡ bù lại hôm nay",
+  ];
 
-  const suggestions = mode === 'chat' ? writeSuggestions : editSuggestions
+  const suggestions = mode === "chat" ? writeSuggestions : editSuggestions;
 
   return (
     <div className="text-center w-full h-full flex items-center justify-center">
       <div className="px-2 w-full">
-        <h1 className="text-3xl mb-2">
-          🤖
-        </h1>
+        <h1 className="text-3xl mb-2">🤖</h1>
         <h1 className="vi-text-primary text-3xl font-bold mb-2">
           AI Assistant
         </h1>
@@ -44,7 +43,7 @@ export default function AssistantWelcome({ mode, onSuggestionClick }: AssistantW
                 onClick={() => onSuggestionClick?.(suggestion)}
               >
                 <Sparkles className="flex-shrink-0 mr-2" />
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap w-full whitespace-pre-line">
                   {suggestion}
                 </span>
               </Button>
@@ -53,5 +52,5 @@ export default function AssistantWelcome({ mode, onSuggestionClick }: AssistantW
         </div>
       </div>
     </div>
-  )
+  );
 }

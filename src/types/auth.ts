@@ -13,6 +13,9 @@ export interface User {
   created_at: string
   updated_at: string
   last_login: string
+  followers_count?: number
+  following_count?: number
+  is_following?: boolean
 }
 
 export interface AuthState {

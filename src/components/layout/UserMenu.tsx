@@ -6,7 +6,7 @@ import { useAppSelector } from '@/lib/hooks/reduxHooks'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"
 import * as Menubar from '@radix-ui/react-menubar'
-import { SquareUser, Settings, LogOut } from 'lucide-react'
+import { SquareUser, Settings, LogOut, ShieldUser } from 'lucide-react'
 import UserAvatar from '@/components/ui/avatar'
 import { selectAuthLoading, selectIsAuthenticated, selectUser } from '@/lib/store/auth/authSlice'
 
@@ -42,20 +42,20 @@ const UserMenu: React.FC = () => {
   }, [])
 
   if (authLoading) {
-    return <Skeleton className="w-9 h-9 rounded-full"/>
-  } 
+    return <Skeleton className="w-9 h-9 rounded-full" />
+  }
   if (!isAuthenticated) {
     return <Button onClick={() => router.push('/sign-in')}>Login</Button>
   }
 
   return (
     <>
-      <UserAvatar 
+      <UserAvatar
         id={'header-avatar'}
         className="w-9 h-9 cursor-pointer"
         src={user?.avt_url}
         alt={"Johnny Dark"}
-            fallbackText={user?.username.charAt(0).toUpperCase() || "U"}
+        fallbackText={user?.username.charAt(0).toUpperCase() || "U"}
         onClick={toggleDropdown}
       />
       {isDropdownVisible && (
@@ -64,25 +64,34 @@ const UserMenu: React.FC = () => {
           className="absolute top-[44px] border w-48 shadow-lg rounded-md p-2 bg-white"
         >
           <Menubar.Menu>
-            <Menubar.Trigger 
+            <Menubar.Trigger
               className="w-full inline-flex items-center text-start px-2 py-2 hover:bg-gray-200 hover:rounded-md"
               onClick={() => router.push('/profile')}
             >
-              <SquareUser size={18} className="mr-4"/>
+              <SquareUser size={18} className="mr-4" />
               Profile
             </Menubar.Trigger>
-            <Menubar.Trigger 
+            {user?.role === 'admin' && (
+              <Menubar.Trigger
+                className="w-full inline-flex items-center text-start px-2 py-2 hover:bg-gray-200 hover:rounded-md"
+                onClick={() => router.push('/admin')}
+              >
+                <ShieldUser size={22} className="mr-3.5 -ml-0.5" />
+                Administrator
+              </Menubar.Trigger>
+            )}
+            <Menubar.Trigger
               className="w-full inline-flex items-center text-start px-2 py-2 hover:bg-gray-200 hover:rounded-md"
               onClick={() => router.push('/settings')}
             >
-              <Settings size={22} className="mr-3.5 -ml-0.5"/>
+              <Settings size={22} className="mr-3.5 -ml-0.5" />
               Settings
             </Menubar.Trigger>
-            <Menubar.Trigger 
+            <Menubar.Trigger
               className="w-full inline-flex items-center text-start px-2 py-2 hover:bg-gray-200 hover:rounded-md"
               onClick={handleLogout}
             >
-              <LogOut size={22} className="mr-3"/>
+              <LogOut size={22} className="mr-3" />
               Logout
             </Menubar.Trigger>
           </Menubar.Menu>
