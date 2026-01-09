@@ -46,3 +46,9 @@ export const changeUserPassword = async (
   })
 }
 
+export const getSummary = async (token?: string): Promise<[]> => {
+  const res = await api.get(`${API_ROUTES.GET_SUMMARY}stats/summary`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return res.data
+}

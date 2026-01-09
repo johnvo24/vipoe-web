@@ -30,4 +30,6 @@ export const API_ROUTES = {
   CREATE_NEW_USER: "/v1/admin/users/",
   UPDATE_USER: "/v1/admin/users/",
   DELETE_USER: "/v1/admin/users/",
+  // Admin Poem Management
+  GET_SUMMARY: "/v1/admin/poems/"
 }
